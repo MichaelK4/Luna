@@ -125,7 +125,9 @@
     <ClCompile Include="src\Luna\Vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Libs.h" />
     <ClInclude Include="src\Luna\Engine.h" />
+    <ClInclude Include="src\Luna\EngineMath.h" />
     <ClInclude Include="src\Luna\RigidBody.h" />
     <ClInclude Include="src\Luna\Collider.h" />
     <ClInclude Include="src\Luna\Vector2.h" />

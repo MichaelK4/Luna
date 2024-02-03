@@ -1,4 +1,6 @@
-#pragma once
+#ifndef COLLIDER_H
+#define COLLIDER_H
+
 #include "Vector2.h"
 class Collider
 {
@@ -12,3 +14,4 @@ public:
 	bool IsColliding(const Collider& other) const;
 };
 
+#endif // !COLLIDER_H

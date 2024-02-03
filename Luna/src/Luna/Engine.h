@@ -1,4 +1,6 @@
-#pragma once
+#ifndef ENGINE_H
+#define ENGINE_H
+
 #include "RigidBody.h"
 #include "Collider.h"
 
@@ -21,3 +23,4 @@ public:
 
 };
 
+#endif // !ENGINE_H

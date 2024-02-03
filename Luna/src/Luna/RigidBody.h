@@ -1,4 +1,6 @@
-#pragma once
+#ifndef RIGID_BODY_H
+#define RIGID_BODY_H
+
 #include "Vector2.h"
 class RigidBody
 {
@@ -15,3 +17,4 @@ public:
 
 };
 
+#endif // !RIGID_BODY_H
