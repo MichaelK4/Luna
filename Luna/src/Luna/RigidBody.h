@@ -1,7 +1,7 @@
 #ifndef RIGID_BODY_H
 #define RIGID_BODY_H
 
-#include "Vector2.h"
+#include "EngineMath.h"
 class RigidBody
 {
 public:
@@ -10,7 +10,7 @@ public:
 	Vector2 velocity;
 	Vector2 acceleration;
 
-	RigidBody(const Vector2& startPosition, const Vector2& startVelocity);
+	RigidBody(BodyShape shape, const Vector2& startPosition, const Vector2& startVelocity);
 
 	// updtae position based on velocity
 	void Update(float deltaTime);
