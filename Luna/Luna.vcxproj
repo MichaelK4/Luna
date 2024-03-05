@@ -118,23 +118,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Luna\BodyShape.cpp" />
-    <ClCompile Include="src\Luna\Mat2.cpp" />
-    <ClCompile Include="src\Luna\Engine.cpp" />
-    <ClCompile Include="src\Luna\RigidBody.cpp" />
-    <ClCompile Include="src\Luna\Collider.cpp" />
+    <ClCompile Include="Clock.cpp" />
+    <ClCompile Include="Manifold.cpp" />
+    <ClCompile Include="Mat2.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
+    <ClCompile Include="Collider.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="src\Luna\Vector2.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Luna\BodyShape.h" />
-    <ClInclude Include="src\Luna\Mat2.h" />
-    <ClInclude Include="src\Luna\Libs.h" />
-    <ClInclude Include="src\Luna\Engine.h" />
-    <ClInclude Include="src\Luna\EngineMath.h" />
-    <ClInclude Include="src\Luna\RigidBody.h" />
-    <ClInclude Include="src\Luna\Collider.h" />
-    <ClInclude Include="src\Luna\Vector2.h" />
+    <ClInclude Include="Clock.h" />
+    <ClInclude Include="Libs.h" />
+    <ClInclude Include="EngineMath.h" />
+    <ClInclude Include="Manifold.h" />
+    <ClInclude Include="Mat2.h" />
+    <ClInclude Include="RigidBody.h" />
+    <ClInclude Include="Collider.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="Shape.h" />
+    <ClInclude Include="Vector2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

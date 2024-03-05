@@ -18,48 +18,57 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Luna\Vector2.cpp">
+    <ClCompile Include="Vector2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Luna\Collider.cpp">
+    <ClCompile Include="Collider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Luna\RigidBody.cpp">
+    <ClCompile Include="RigidBody.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Luna\Engine.cpp">
+    <ClCompile Include="Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Luna\Mat2.cpp">
+    <ClCompile Include="Manifold.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Luna\BodyShape.cpp">
+    <ClCompile Include="Clock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mat2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Luna\Vector2.h">
+    <ClInclude Include="Vector2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Luna\Collider.h">
+    <ClInclude Include="Collider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Luna\RigidBody.h">
+    <ClInclude Include="RigidBody.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Luna\Engine.h">
+    <ClInclude Include="Libs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Luna\Libs.h">
+    <ClInclude Include="EngineMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Luna\EngineMath.h">
+    <ClInclude Include="Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Luna\Mat2.h">
+    <ClInclude Include="Manifold.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Luna\BodyShape.h">
+    <ClInclude Include="Clock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mat2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
