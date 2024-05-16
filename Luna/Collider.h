@@ -1,16 +1,17 @@
 #ifndef COLLIDER_H
 #define COLLIDER_H
 
-#include "Manifold.h"
 #include "Shape.h"
 
 
 namespace Luna
 {
+    class Manifold;
+    class RigidBody;
 
-	typedef void (*CollisionCallback)(Manifold* m, RigidBody* a, RigidBody* b);
+    typedef void (*CollisionCallback)(Manifold* m, RigidBody* a, RigidBody* b);
 
-	extern CollisionCallback Dispatch[Shape::eCount][Shape::eCount];
+    extern CollisionCallback Dispatch[Shape::eCount][Shape::eCount];
 
 
     void CircleToCircle(Manifold* m, RigidBody* rbA, RigidBody* rbB);

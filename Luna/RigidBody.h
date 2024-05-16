@@ -9,9 +9,9 @@ namespace Luna
 
 	class RigidBody
 	{
-	private:
-		uint x;
-		uint y;
+		//private:
+			//uint x;
+			//uint y;
 
 	public:
 		Shape* shape;
@@ -55,7 +55,10 @@ namespace Luna
 
 
 		// updtae position based on velocity
-		void Update(float deltaTime);
+		virtual void Update(float deltaTime)
+		{
+
+		}
 
 	};
 }

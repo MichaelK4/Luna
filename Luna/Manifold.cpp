@@ -1,6 +1,4 @@
-#include "Manifold.h"
-#include "Shape.h"
-#include "Collider.h"
+#include "Libs.h"
 
 
 namespace Luna
@@ -11,7 +9,27 @@ namespace Luna
 
 	void Manifold::Solve()
 	{
-		Dispatch[A->shape->GetType()][B->shape->GetType()](this, A, B);
+		if (/*dynamic_cast<SoftBody*>(A) || dynamic_cast<SoftBody*>(B)*/ A == nullptr)
+		{
+			std::cout << "SoftBody Collision" << std::endl;
+			// remove the body from the world
+			if (dynamic_cast<SoftBody*>(A) && dynamic_cast<SoftBody*>(B))
+			{
+				//Dispatch[A->shape->GetType()][B->shape->GetType()](this, A, B);
+			}
+			else if (dynamic_cast<SoftBody*>(A))
+			{
+				//Dispatch[A->shape->GetType()][B->shape->GetType()](this, A, B);
+			}
+			else
+			{
+				//Dispatch[B->shape->GetType()][A->shape->GetType()](this, A, B);
+			}
+		}
+		else
+		{
+			Dispatch[A->shape->GetType()][B->shape->GetType()](this, A, B);
+		}
 	}
 
 	void Manifold::Init()
@@ -30,8 +48,8 @@ namespace Luna
 			Vector2 radB = contacts[i] - B->position;
 
 			// Calculate the relative velocity of the bodies at the contact point
-			Vector2 radV = B->velocity + radB.Cross(B->AngularVelocity, radB)
-				- A->velocity - radA.Cross(A->AngularVelocity, radA);
+			Vector2 radV = B->velocity + Cross(B->AngularVelocity, radB)
+				- A->velocity - Cross(A->AngularVelocity, radA);
 
 			// Calculate the relative velocity in terms of the normal direction
 			// the normal component of the relative velocity
@@ -57,19 +75,19 @@ namespace Luna
 			Vector2 radA = contacts[i] - A->position;
 			Vector2 radB = contacts[i] - B->position;
 
-			Vector2 radV = B->velocity + radB.Cross(B->AngularVelocity, radB) 
-				- A->velocity - radA.Cross(A->AngularVelocity, radA); // Relative velocity
+			Vector2 radV = B->velocity + Cross(B->AngularVelocity, radB)
+				- A->velocity - Cross(A->AngularVelocity, radA); // Relative velocity
 
-			real contactVel = radV.Dot(radV, normal); // the normal component of the relative velocity
+			real contactVel = Dot(radV, normal); // the normal component of the relative velocity
 
 			if (contactVel > 0) // if the objects are moving away from each other we don't need to resolve the collision
 				return;
 
-			real radACrossN = radA.Cross(radA, normal);
-			real radBCrossN = radB.Cross(radB, normal);
-			real invMassSum = A->InverseMass + B->InverseMass + 
-				sqr(radACrossN) * A->InverseInertia + 
-				sqr(radBCrossN) * B->InverseInertia; // the denominator of the impulse calculation
+			real radACrossN = Cross(radA, normal);
+			real radBCrossN = Cross(radB, normal);
+			real invMassSum = A->InverseMass + B->InverseMass +
+				Sqr(radACrossN) * A->InverseInertia +
+				Sqr(radBCrossN) * B->InverseInertia; // the denominator of the impulse calculation
 
 
 			// the impulse scalar
@@ -83,13 +101,13 @@ namespace Luna
 			B->Impulse(impulse, radB);
 
 
-			radV = B->velocity + radB.Cross(B->AngularVelocity, radB) 
-				- A->velocity - radA.Cross(A->AngularVelocity, radA); // Friction impulse
+			radV = B->velocity + Cross(B->AngularVelocity, radB)
+				- A->velocity - Cross(A->AngularVelocity, radA); // Friction impulse
 
-			Vector2 tangent = radV - (normal * radV.Dot(radV, normal)); // the tangent component of the relative velocity
+			Vector2 tangent = radV - (normal * Dot(radV, normal)); // the tangent component of the relative velocity
 			tangent.Normalise(); // normalize the tangent vector
 
-			real jt = -radV.Dot(radV, tangent); // the magnitude of the tangent component of the relative velocity
+			real jt = -Dot(radV, tangent); // the magnitude of the tangent component of the relative velocity
 			jt /= invMassSum;
 			jt /= (real)contactCount;
 

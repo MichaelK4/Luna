@@ -1,10 +1,10 @@
-#include "Shape.h"
+#include "Libs.h"
 
 
 namespace Luna
 {
 	RigidBody::RigidBody() {}
-	RigidBody::RigidBody(Shape* shape, uint x, uint y): shape(shape->Clone(shape->rb))
+	RigidBody::RigidBody(Shape* shape, uint x, uint y) : shape(shape->Clone(shape->rb))
 	{
 		shape->rb = this;
 		position.Set((real)x, (real)y);
@@ -16,10 +16,15 @@ namespace Luna
 		StaticFriction = 0.5f;
 		DynamicFriction = 0.3f;
 		Restitution = 0.2f;
-		shape->Init(shape->rb); 
-		r = Random(0.1f, 1.0f);
-		g = Random(0.1f, 1.0f);
-		b = Random(0.1f, 1.0f);
+		shape->Init(shape->rb);
+		do
+		{
+			r = Random(0.2f, 1.0f);
+			g = Random(0.2f, 1.0f);
+			b = Random(0.2f, 1.0f);
+		} while (r >= 0.6 && r <= 0.9
+			&& g >= 0.6 && g <= 0.9
+			&& b >= 0.6 && b <= 0.9);
 	}
 	RigidBody::~RigidBody() {}
 
@@ -32,15 +37,13 @@ namespace Luna
 	void RigidBody::Impulse(const Vector2& impulse, const Vector2& contactVec)
 	{
 		velocity += impulse * InverseMass;
-
-		real cross = contactVec.Cross(contactVec, impulse);
-		AngularVelocity += InverseInertia * cross;
+		AngularVelocity += InverseInertia * Cross(contactVec, impulse);
 	}
 
-	void RigidBody::SetOrient(real radians)
+	void RigidBody::SetOrient(real rad)
 	{
-		Orient = radians;
-		shape->SetOrient(radians);
+		Orient = rad;
+		shape->SetOrient(rad);
 	}
 
 	void RigidBody::SetStatic()

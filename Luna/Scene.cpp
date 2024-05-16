@@ -1,5 +1,5 @@
-#include "Scene.h"
-#include "Shape.h"
+#include "Libs.h"
+
 
 namespace Luna
 {
@@ -9,12 +9,12 @@ namespace Luna
 		iterations = 0;
 	}
 
-	Scene::Scene(float deltaTime, uint iterations) : deltaTime(deltaTime), iterations(iterations)
+	Scene::Scene(real deltaTime, uint iterations) : deltaTime(deltaTime), iterations(iterations)
 	{ }
 
 	Scene::~Scene() {}
 
-	void IntegradeForces(RigidBody* body, float deltaTime)
+	void IntegradeForces(RigidBody* body, real deltaTime)
 	{
 		if (body->InverseMass == 0.0f)
 			return;
@@ -23,7 +23,7 @@ namespace Luna
 		body->AngularVelocity += body->Torque * body->InverseInertia * (deltaTime / 2.0f);
 	}
 
-	void IntegradeVelocity(RigidBody* body, float deltaTime)
+	void IntegradeVelocity(RigidBody* body, real deltaTime)
 	{
 		if (body->InverseMass == 0.0f)
 			return;
@@ -46,7 +46,7 @@ namespace Luna
 			for (uint j = i + 1; j < bodies.size(); j++)
 			{
 				RigidBody* rbB = bodies[j];
-				if(rbA->InverseMass == 0 && rbB->InverseMass == 0)
+				if (rbA->InverseMass == 0 && rbB->InverseMass == 0)
 					continue;
 				Manifold m(rbA, rbB);
 				m.Solve();
@@ -106,24 +106,26 @@ namespace Luna
 			RigidBody* body = bodies[i];
 			body->shape->Draw(body);
 		}
-
 		glPointSize(4.0f);
 		glBegin(GL_POINTS);
-			glColor3f(1.0f, 0.0f, 0.0f);
-			for (uint i = 0; i < contacts.size(); i++)
+		// Change color for contact points
+		glColor3f(1.0f, 0.0f, 0.0f); // Red color for contact points
+		for (uint i = 0; i < contacts.size(); i++)
+		{
+			Manifold& m = contacts[i];
+			for (uint j = 0; j < m.contactCount; j++)
 			{
-				Manifold& m = contacts[i];
-				for (uint j = 0; j < m.contactCount; j++)
-				{
-					Vector2 c = m.contacts[j];
-					glVertex2f(c.x, c.y);
-				}
+				Vector2 c = m.contacts[j];
+				glVertex2f(c.x, c.y);
 			}
+		}
 		glEnd();
 		glPointSize(1.0f);
 
+		//glLineWidth(3.0f);
 		glBegin(GL_LINES);
-		glColor3f(0.0f, 1.0f, 0.0);
+		// Change color for collision normals
+		glColor3f(0.0f, 0.0f, 1.0f); // Blue color for collision normals
 		for (uint i = 0; i < contacts.size(); i++)
 		{
 			Manifold& m = contacts[i];
@@ -138,6 +140,39 @@ namespace Luna
 			}
 		}
 		glEnd();
+
+		////glPointSize(4.0f);
+		//glBegin(GL_POINTS);
+		//glColor3f(1.0f, 0.0f, 0.0f);
+		//for (uint i = 0; i < contacts.size(); i++)
+		//{
+		//	Manifold& m = contacts[i];
+		//	for (uint j = 0; j < m.contactCount; j++)
+		//	{
+		//		Vector2 c = m.contacts[j];
+		//		glVertex2f(c.x, c.y);
+		//	}
+		//}
+		//glEnd();
+		//glPointSize(1.0f);
+
+		////glLineWidth(3.0f);
+		//glBegin(GL_LINES);
+		//glColor3f(0.0f, 1.0f, 0.0f);
+		//for (uint i = 0; i < contacts.size(); i++)
+		//{
+		//	Manifold& m = contacts[i];
+		//	Vector2 v = m.normal;
+		//	for (uint j = 0; j < m.contactCount; j++)
+		//	{
+		//		Vector2 c = m.contacts[j];
+		//		glVertex2f(c.x, c.y);
+		//		v *= 0.75f;
+		//		c += v;
+		//		glVertex2f(c.x, c.y);
+		//	}
+		//}
+		//glEnd();
 	}
 
 	RigidBody* Scene::Add(Shape* shape, uint x, uint y)
@@ -147,6 +182,15 @@ namespace Luna
 		rb->shape->rb = shape->rb;
 		bodies.push_back(rb);
 		return rb;
+	}
+
+	SoftBody* Scene::AddSoft(Shape* shape, uint x, uint y)
+	{
+		assert(shape);
+		SoftBody* sb = new SoftBody(shape, x, y);
+		sb->shape->rb = shape->rb;
+		bodies.push_back(sb);
+		return sb;
 	}
 
 

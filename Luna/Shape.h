@@ -1,9 +1,8 @@
 #ifndef SHAPE_H
 #define SHAPE_H
-#include "Mat2.h"
 #include "RigidBody.h"
 
-#define MaxPolyCount 64
+#define MaxPolyCount 128
 
 namespace Luna
 {
@@ -16,9 +15,11 @@ namespace Luna
 			eCount
 		};
 
-		Shape() 
+		RigidBody* rb;
+
+		Shape()
 		{
-			
+
 		}
 
 		virtual Shape* Clone(RigidBody* rb) const = 0
@@ -31,9 +32,9 @@ namespace Luna
 		virtual void Draw(RigidBody* rb) = 0;
 		virtual ShapeType GetType() const = 0;
 
-		RigidBody* rb; 
 
 		real radius;
+
 
 		Mat2 mat;
 	};
@@ -47,15 +48,15 @@ namespace Luna
 
 		Shape* Clone(RigidBody* rb) const override
 		{
-			return new Circle(radius); 
+			return new Circle(radius);
 		}
 
-		void Init(RigidBody* rb) override
+		void Init(RigidBody* rb)
 		{
 			ComputeMass(1.0f, rb);
 		}
 
-		void ComputeMass(real density, RigidBody* rb) override
+		void ComputeMass(real density, RigidBody* rb)
 		{
 			rb->Mass = PI * radius * radius * density;
 			rb->InverseMass = (rb->Mass) ? 1.0f / rb->Mass : 0.0f;
@@ -63,7 +64,7 @@ namespace Luna
 			rb->InverseInertia = (rb->Inertia) ? 1.0f / rb->Inertia : 0.0f;
 		}
 
-		void SetOrient(real radians) override
+		void SetOrient(real radians)
 		{
 			// do nothing - a circle is symmetrical
 		}
@@ -72,30 +73,33 @@ namespace Luna
 		{
 			const uint k_segments = 20;
 
-			glColor3d(rb->r, rb->g, rb->b);
-			glBegin(GL_LINE_LOOP); // Circle with a lot of lines
-				real theta = rb->Orient;
-				real increment = PI * 2.0f / real(k_segments);
-				for (uint i = 0; i < k_segments; i++)
-				{
-					theta += increment;
-					Vector2 p(cos(theta), sin(theta));
-					p *= radius;
-					p += rb->position;
-					glVertex2d(p.x, p.y);
-				}
+			glColor3f(rb->r, rb->g, rb->b);
+			//glBegin(GL_LINE_LOOP); // Circle with a lot of lines
+			glBegin(GL_TRIANGLE_FAN);
+			real theta = rb->Orient;
+			real increment = PI * 2.0f / real(k_segments);
+			for (uint i = 0; i < k_segments; i++)
+			{
+				theta += increment;
+				Vector2 p(cos(theta), sin(theta));
+				p *= radius;
+				p += rb->position;
+				glVertex2f(p.x, p.y);
+			}
 			glEnd();
 
 			// Draw line to show rotation
+			//glColor3f(1.0f, 1.0f, 1.0f);
 			glBegin(GL_LINE_STRIP);
-				Vector2 r(0, 1.0f);
-				real c = cos(rb->Orient);
-				real s = sin(rb->Orient);
-				r.Set(r.x * c - r.y * s, r.x * s + r.y * c);
-				r *= radius;
-				r += rb->position;
-				glVertex2f(rb->position.x, rb->position.y);
-				glVertex2f(r.x, r.y);
+			glColor3f(1.0f, 1.0f, 1.0f);
+			Vector2 r(0, 1.0f);
+			real c = cos(rb->Orient);
+			real s = sin(rb->Orient);
+			r.Set(r.x * c - r.y * s, r.x * s + r.y * c);
+			r *= radius;
+			r += rb->position;
+			glVertex2f(rb->position.x, rb->position.y);
+			glVertex2f(r.x, r.y);
 			glEnd();
 		}
 
@@ -134,10 +138,10 @@ namespace Luna
 			ComputeMass(1.0f, rb);
 		}
 
-		void ComputeMass(real density, RigidBody* rb)
+		void ComputeMass(real density, RigidBody* rb) override
 		{
 			Vector2 centroid(0.0f, 0.0f);
-			real area = 0.0f; 
+			real area = 0.0f;
 			real I = 0.0f;
 			const real k_inv3 = 1.0f / 3.0f;
 
@@ -147,7 +151,7 @@ namespace Luna
 				uint next = i + 1 < vertex_count ? i + 1 : 0;
 				Vector2 q(vertices[next]);
 
-				real D = p.Cross(p, q);
+				real D = Cross(p, q);
 				real triangleArea = 0.5f * D;
 
 				area += triangleArea;
@@ -155,21 +159,21 @@ namespace Luna
 				centroid += (p + q) * triangleArea * k_inv3;
 
 				real intx = p.x * p.x + q.x * p.x + q.x * q.x;
-				real inty = p.y * p.y + q.y * p.y + q.y * q.y; 
-				I += (0.25f * k_inv3 * D) * (intx + inty); 
+				real inty = p.y * p.y + q.y * p.y + q.y * q.y;
+				I += (0.25f * k_inv3 * D) * (intx + inty);
 			}
 
 			centroid *= 1.0f / area;
 
 			for (uint i = 0; i < vertex_count; i++)
 			{
-				vertices[i] -= centroid; 
+				vertices[i] -= centroid;
 			}
 
 			rb->Mass = density * area;
-			rb->InverseMass = (rb->Mass) ? 1.0f / rb->Mass : 0.0f; 
-			rb->Inertia = I * density; 
-			rb->InverseInertia = rb->Inertia ? 1.0f / rb->Inertia : 0.0f; 
+			rb->InverseMass = (rb->Mass) ? 1.0f / rb->Mass : 0.0f;
+			rb->Inertia = I * density;
+			rb->InverseInertia = rb->Inertia ? 1.0f / rb->Inertia : 0.0f;
 		}
 
 		void SetOrient(real radians) override
@@ -177,19 +181,20 @@ namespace Luna
 			mat.Set(radians);
 		}
 
-		void Draw(RigidBody* rb) override 
+		void Draw(RigidBody* rb) override
 		{
-			glColor3d(rb->r, rb->g, rb->b);
-			glBegin(GL_LINE_LOOP); 
-				for (uint i = 0; i < vertex_count; i++)
-				{
-					Vector2 v = rb->position + mat * vertices[i];
-					glVertex2d(v.x, v.y);
-				}
+			glColor3f(rb->r, rb->g, rb->b);
+			//glBegin(GL_LINE_LOOP);
+			glBegin(GL_POLYGON);
+			for (uint i = 0; i < vertex_count; i++)
+			{
+				Vector2 v = rb->position + mat * vertices[i];
+				glVertex2f(v.x, v.y);
+			}
 			glEnd();
 		}
 
-		ShapeType GetType() const override
+		ShapeType GetType() const
 		{
 			return ePolygon;
 		}
@@ -211,83 +216,83 @@ namespace Luna
 
 		void Set(Vector2* vec, uint count)
 		{
-			assert(count > 2 && count < MaxPolyCount); 
-			count = std::min((uint)MaxPolyCount, count); 
+			assert(count > 2 && count < MaxPolyCount);
+			count = std::min((uint)MaxPolyCount, count);
 
 			// Find the right most point on the hull
-			int rightMost = 0; 
-			real highestXCoord = vec[0].x; 
+			int rightMost = 0;
+			real highestXCoord = vec[0].x;
 			for (uint i = 1; i < count; i++)
 			{
-				real x = vec[i].x; 
+				real x = vec[i].x;
 				if (x > highestXCoord)
 				{
-					highestXCoord = x; 
-					rightMost = i; 
+					highestXCoord = x;
+					rightMost = i;
 				}
 				else if (x == highestXCoord)
 				{
 					if (vec[i].y < vec[rightMost].y)
 					{
-						rightMost = i; 
+						rightMost = i;
 					}
 				}
 			}
 
 			int hull[MaxPolyCount]; // hull is a list of point indexes
-			int outCount = 0; 
-			int indexHull = rightMost; 
+			int outCount = 0;
+			int indexHull = rightMost;
 
 			for (;;)
 			{
-				hull[outCount] = indexHull; 
-				int nextHullIndex = 0; 
+				hull[outCount] = indexHull;
+				int nextHullIndex = 0;
 				for (int i = 1; i < (int)count; i++)
 				{
 					if (nextHullIndex == indexHull)
 					{
-						nextHullIndex = i; 
-						continue; 
+						nextHullIndex = i;
+						continue;
 					}
 
-					Vector2 e1 = vec[nextHullIndex] - vec[hull[outCount]]; 
-					Vector2 e2 = vec[i] - vec[hull[outCount]]; 
-					real c = e1.Cross(e1, e2);
+					Vector2 e1 = vec[nextHullIndex] - vec[hull[outCount]];
+					Vector2 e2 = vec[i] - vec[hull[outCount]];
+					real c = Cross(e1, e2);
 					if (c < 0.0f)
 					{
-						nextHullIndex = i; 
+						nextHullIndex = i;
 					}
 
 					if (c == 0.0f && e2.LengthSqr() > e1.LengthSqr())
 					{
-						nextHullIndex = i; 
+						nextHullIndex = i;
 					}
 				}
 
-				outCount++; 
-				indexHull = nextHullIndex; 
+				outCount++;
+				indexHull = nextHullIndex;
 
 				if (nextHullIndex == rightMost)
 				{
-					vertex_count = outCount; 
-					break; 
+					vertex_count = outCount;
+					break;
 				}
 			}
 
-			for (uint i = 0; i < vertex_count; i++) 
+			for (uint i = 0; i < vertex_count; i++)
 			{
-				vertices[i] = vec[hull[i]];  
-			} 
+				vertices[i] = vec[hull[i]];
+			}
 
 			for (uint i = 0; i < vertex_count; i++)
 			{
-				uint i2 = i + 1 < vertex_count ? i + 1 : 0;  
-				Vector2 face = vertices[i2] - vertices[i];  
+				uint i2 = i + 1 < vertex_count ? i + 1 : 0;
+				Vector2 face = vertices[i2] - vertices[i];
 
 				assert(face.LengthSqr() > EPSILON * EPSILON);
 
-				normals[i] = Vector2(face.y, -face.x);  
-				normals[i].Normalise(); 
+				normals[i] = Vector2(face.y, -face.x);
+				normals[i].Normalise();
 			}
 		}
 
@@ -298,18 +303,18 @@ namespace Luna
 
 			for (uint i = 0; i < vertex_count; i++)
 			{
-				Vector2 v = vertices[i]; 
-				real projection = v.Dot(v, dir);
+				Vector2 v = vertices[i];
+				real projection = Dot(v, dir);
 
-				if (projection > bestProjection) 
+				if (projection > bestProjection)
 				{
-					bestVertex = v; 
-					bestProjection = projection; 
+					bestVertex = v;
+					bestProjection = projection;
 				}
 			}
 
-			return bestVertex; 
-		} 
+			return bestVertex;
+		}
 	};
 
 }

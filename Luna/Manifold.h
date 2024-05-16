@@ -1,11 +1,12 @@
 #ifndef MANIFOLD_H
 #define MANIFOLD_H
 
-#include "RigidBody.h"
 //#include "Collider.h"
+
 
 namespace Luna
 {
+	class RigidBody;
 	class Manifold
 	{
 	public:

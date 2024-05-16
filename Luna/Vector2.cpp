@@ -2,223 +2,212 @@
 
 namespace Luna
 {
-	const Vector2 Vector2::Zero = Vector2(0.0f, 0.0f);
+	Vector2::Vector2() : x(0.0f), y(0.0f) {}
+	Vector2::Vector2(real x, real y) :x(x), y(y) {}
+	Vector2::Vector2(const Vector2& oVec) : x(oVec.x), y(oVec.y) {}
+	Vector2::~Vector2() {}
 
-	Vector2::Vector2() : x(0.0f), y(0.0f) {} // default constructor
-
-	Vector2::Vector2(real x, real y) : x(x), y(y) {} // constructor
-
-	Vector2::Vector2(const Vector2& otherVec) : x(otherVec.x), y(otherVec.y) {} // copy constructor
-
-	Vector2::~Vector2() {} // destructor
-
-	// operator+ overloading
-	Vector2 Vector2::operator+(const Vector2& otherVec) const
+	void Vector2::Set(real x, real y)
 	{
-		return Vector2(this->x + otherVec.x, this->y + otherVec.y);
+		this->x = x;
+		this->y = y;
 	}
 
-	// operator+ overloading for adding scalar
-	Vector2 Vector2::operator+(real scalar) const
-	{
-		return Vector2(this->x + scalar, this->y + scalar);
-	}
-
-	// operator+= overloading
-	Vector2 Vector2::operator+=(const Vector2& otherVec)
-	{
-		return Vector2(this->x += otherVec.x, this->y += otherVec.y);
-	}
-
-	// operator- overloading
-	Vector2 Vector2::operator-(const Vector2& otherVec) const
-	{
-		return Vector2(this->x - otherVec.x, this->y - otherVec.y);
-	}
-
-	// operator- overloading for negative vector
-	Vector2 Vector2::operator-() const
-	{
-		return Vector2(-this->x, -this->y);
-	}
-
-	// operator-= overloading
-	Vector2 Vector2::operator-=(const Vector2& otherVec)
-	{
-		return Vector2(this->x -= otherVec.x, this->y -= otherVec.y);
-	}
-
-	// operator* overloading
-	Vector2 Vector2::operator*(const real& scalar) const
-	{
-		return Vector2(this->x * scalar, this->y * scalar);
-	}
-
-	// operator*= overloading
-	Vector2 Vector2::operator*=(const real& scalar)
-	{
-		return Vector2(this->x *= scalar, this->y *= scalar);
-	}
-
-	// operator/ overloading
-	Vector2 Vector2::operator/(const real& scalar) const
-	{
-		return Vector2(this->x / scalar, this->y / scalar);
-	}
-
-	// operator/= overloading
-	Vector2 Vector2::operator/=(const real& scalar)
-	{
-		return Vector2(this->x /= scalar, this->y /= scalar);
-	}
-
-	// operator== overloading
-	bool Vector2::operator==(const Vector2& otherVec) const
-	{
-		return (this->x == otherVec.x && this->y == otherVec.y);
-	}
-
-	// operator!= overloading
-	bool Vector2::operator!=(const Vector2& otherVec) const
-	{
-		return (this->x != otherVec.x || this->y != otherVec.y);
-	}
-
-	// operator= overloading
-	Vector2 Vector2::operator=(const Vector2& otherVec)
-	{
-		if (this != &otherVec)
-		{
-			this->x = otherVec.x;
-			this->y = otherVec.y;
-		}
-		return *this;
-	}
-
-	// set position
-	void Vector2::Set(real new_x, real new_y)
-	{
-		x = new_x;
-		y = new_y;
-	}
-
-	/* dot product - 2D vector only
-	dot product is the cosine of the angle
-	between two vectors */
-	real Vector2::Dot(const Vector2& v, const Vector2& otherVec) const
-	{
-		return (v.x * otherVec.x + v.y * otherVec.y);
-	}
-
-	/* cross product - 2D vector only
-	cross product is the sine of the angle
-	between two vectors */
-	real Vector2::Cross(const Vector2& v, const Vector2& otherVec) const
-	{
-		return (v.x * otherVec.y - v.y * otherVec.x);
-	}
-
-	// cross product with scalar
-	Vector2 Vector2::Cross(const Vector2& otherVec, real s) const
-	{
-		return Vector2(s * otherVec.y, -s * otherVec.x);
-	}
-
-	// cross product with scalar
-	Vector2 Vector2::Cross(real s, const Vector2& otherVec) const
-	{
-		return Vector2(-s * otherVec.y, s * otherVec.x);
-	}
-
-	// Normalise the vector
 	void Vector2::Normalise()
 	{
 		real len = Length();
 		if (len > EPSILON)
 		{
-			real invlen = 1.0f / len;
-			this->x *= invlen;
-			this->y *= invlen;
+			real t = 1.0f / len;
+			this->x *= t;
+			this->y *= t;
 		}
 	}
 
-	// Maximum value between two vectors
-	Vector2 Vector2::Max(const Vector2& otherVec) const
-	{
-		return Vector2(std::max(this->x, otherVec.x), std::max(this->y, otherVec.y));
-	}
-
-	// Minimum value between two vectors
-	Vector2 Vector2::Min(const Vector2& otherVec) const
-	{
-		return Vector2(std::min(this->x, otherVec.x), std::min(this->y, otherVec.y));
-	}
-
-	// Get the length of the vector
 	real Vector2::Length() const
 	{
 		return sqrt(this->x * this->x + this->y * this->y);
 	}
 
-	// Get the squared length of the vector
+	// Get the squared length of the vector 
 	real Vector2::LengthSqr() const
 	{
 		return (this->x * this->x + this->y * this->y);
 	}
 
-	void Vector2::Rotate(real radians)
+	// rotate the vector by radians 
+	void Vector2::Rotate(real rad)
 	{
-		real c = cos(radians);
-		real s = sin(radians);
+		real c = cos(rad);
+		real s = sin(rad);
 
-		real xp = this->x * c - this->y * s;
-		real yp = this->x * s + this->y * c;
+		real x_ = this->x * c - this->y * s;
+		real y_ = this->x * s + this->y * c;
 
-		this->x = xp;
-		this->y = yp;
+		this->x = x_;
+		this->y = y_;
 	}
 
-	// Get the distance between two vectors
-	real Vector2::Distance(const Vector2& otherVec) const
+	// operator+ overloading for adding vector
+	Vector2 Vector2::operator+(const Vector2& v)
 	{
-		real dx = this->x - otherVec.x;
-		real dy = this->y - otherVec.y;
-		return sqrt(dx * dx + dy * dy);
+		return Vector2(this->x + v.x, this->y + v.y);
+	}
+
+	// operator+ overloading for adding scalar
+	Vector2 Vector2::operator+(real scalar)
+	{
+		return Vector2(this->x + scalar, this->y + scalar);
+	}
+
+	// operator+= overloading for adding vector
+	Vector2 Vector2::operator+=(const Vector2& v)
+	{
+		return Vector2(this->x += v.x, this->y += v.y);
+	}
+
+	// operator- overloading for subtracting scalar
+	Vector2 Vector2::operator-(const Vector2& v)
+	{
+		return Vector2(this->x - v.x, this->y - v.y);
+	}
+
+	// operator-= overloading for subtracting vector
+	Vector2 Vector2::operator-=(const Vector2& v)
+	{
+		return Vector2(this->x -= v.x, this->y -= v.y);
+	}
+
+	// operator- overloading for negative vector
+	Vector2 Vector2::operator-()
+	{
+		return Vector2(-this->x, -this->y);
+	}
+
+	// operator* overloading for multiplying vector with scalar
+	Vector2 Vector2::operator*(const real& scalar) const
+	{
+		return Vector2(this->x * scalar, this->y * scalar);
+	}
+
+	// operator*= overloading for multiplying vector with scalar
+	Vector2 Vector2::operator*=(const real& scalar)
+	{
+		return Vector2(this->x *= scalar, this->y *= scalar);
+	}
+
+	// operator/ overloading for dividing vector with scalar
+	Vector2 Vector2::operator/(const real& scalar) const
+	{
+		return Vector2(this->x / scalar, this->y / scalar);
+	}
+
+	// operator/= overloading for dividing vector with scalar
+	Vector2 Vector2::operator/=(const real& scalar)
+	{
+		return Vector2(this->x /= scalar, this->y /= scalar);
+	}
+
+	//// operator== overloading for comparing vector
+	//bool Vector2::operator==(const Vector2& oVec) const
+	//{
+	//	return (this->x == otherVec.x && this->y == otherVec.y);
+	//}
+
+	//// operator!= overloading for comparing vector
+	//bool Vector2::operator!=(const Vector2& oVec) const
+	//{
+	//	return (this->x != otherVec.x || this->y != otherVec.y);
+	//}
+
+	//// operator= overloading for assigning vector
+	//Vector2 Vector2::operator=(const Vector2& oVec)
+	//{
+	//	if (this != &otherVec)
+	//	{
+	//		this->x = otherVec.x;
+	//		this->y = otherVec.y;
+	//	}
+	//	return *this;
+	//}
+
+
+	// Maximum value between two vectors 
+	Vector2 Max(const Vector2& v, const Vector2& oVec)
+	{
+		return Vector2(std::max(v.x, oVec.x), std::max(v.y, oVec.y));
+	}
+
+	// Minimum value between two vectors
+	Vector2 Min(const Vector2& v, const Vector2& oVec)
+	{
+		return Vector2(std::min(v.x, oVec.x), std::min(v.y, oVec.y));
 	}
 
 	// Get the squared distance between two vectors
-	real Vector2::DistanceSqrt(const Vector2& otherVec) const
+	real DistSqr(const Vector2& v, const Vector2& oVec)
 	{
-		real dx = this->x - otherVec.x;
-		real dy = this->y - otherVec.y;
-		return (dx * dx + dy * dy);
+		Vector2 a = v;
+		a -= oVec;
+		return Dot(a, a);
 	}
 
-	//math functions
-	real Random(real a, real b)
+	/* dot product - 2D vector only
+		dot product is the cosine of the angle
+		between two vectors */
+	real Dot(const Vector2& v, const Vector2& oVec)
 	{
-		real rnd = (real)rand() / (real)RAND_MAX;
-		rnd = (a - b) * rnd + b;
-		return rnd;
+		return (v.x * oVec.x + v.y * oVec.y);
 	}
 
-	// check if two real numbers are equal
+	/* cross product - 2D vector only
+	cross product is the sine of the angle
+	between two vectors */
+	real Cross(const Vector2& v, const Vector2& oVec)
+	{
+		return (v.x * oVec.y - v.y * oVec.x);
+	}
+
+	// cross product with scalar 
+	Vector2 Cross(const Vector2& v, real scalar)
+	{
+		return Vector2(scalar * v.y, -scalar * v.x);
+	}
+
+	// cross product with scalar 
+	Vector2 Cross(real scalar, const Vector2& v)
+	{
+		return Vector2(-scalar * v.y, scalar * v.x);
+	}
+
+	// Equal is a function that compares two floating point numbers and returns true if they are equal.
 	bool Equal(real a, real b)
 	{
-		return fabs(a - b) <= EPSILON;
+		return std::abs(a - b) <= EPSILON;
 	}
 
-	// round a real number to the nearest integer
+	// Random is a function that returns a random number between two floating point numbers.
+	real Random(real a, real b)
+	{
+		real c = (real)rand() / RAND_MAX;
+		//c /= RAND_MAX;
+		c = (b - a) * c + a;
+		return c;
+	}
+
+	// Round is a function that rounds a floating point number to the nearest integer.
 	int Round(real a)
 	{
 		return (int)(a + 0.5f);
 	}
 
-	real sqr(real a)
+	// Sqr is a function that returns the square of a floating point number.
+	real Sqr(real a)
 	{
 		return a * a;
 	}
 
+	// Clamp is a function that clamps a floating point number between two values.
 	real Clamp(real val, real min, real max)
 	{
 		if (val < min)
@@ -229,6 +218,9 @@ namespace Luna
 			return val;
 	}
 
+	/* Bias greater than is a function that compares
+	two floating point numbers and returns true if the
+	first number is greater than the second number. */
 	bool BiasGreaterThan(real a, real b)
 	{
 		const real k_biasRelative = 0.95f;
