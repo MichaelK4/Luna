@@ -1,22 +1,51 @@
 #include "Libs.h"
+#include "Material.h" 
 
 
 namespace Luna
 {
 	RigidBody::RigidBody() {}
-	RigidBody::RigidBody(Shape* shape, uint x, uint y) : shape(shape->Clone(shape->rb))
+	RigidBody::RigidBody(Shape* shape, uint x, uint y) : shape(shape->Clone(this)), StaticFriction(0.5f), DynamicFriction(0.3f), Restitution(0.2f)
 	{
 		shape->rb = this;
-		position.Set((real)x, (real)y);
-		velocity.Set(0.0f, 0.0f);
-		AngularVelocity = 0.0f;
-		force.Set(0.0f, 0.0f);
-		Torque = 0.0f;
-		Orient = Random(-PI, PI);
-		StaticFriction = 0.5f;
-		DynamicFriction = 0.3f;
-		Restitution = 0.2f;
-		shape->Init(shape->rb);
+		this->position.Set((real)x, (real)y);
+		this->velocity.Set(0.0f, 0.0f);
+		this->AngularVelocity = 0.0f;
+		this->force.Set(0.0f, 0.0f);
+		this->Torque = 0.0f;
+		this->Orient = Random(-PI, PI);
+		//this->StaticFriction = 0.5f;
+		//this->DynamicFriction = 0.3f;
+		//this->Restitution = 0.2f;
+		shape->Init(this);
+		do
+		{
+			r = Random(0.2f, 1.0f);
+			g = Random(0.2f, 1.0f);
+			b = Random(0.2f, 1.0f);
+		} while (r >= 0.6 && r <= 0.9
+			  && g >= 0.6 && g <= 0.9
+			  && b >= 0.6 && b <= 0.9);
+	}
+
+	RigidBody::RigidBody(Shape* shape, uint x, uint y, Material* m) 
+		: shape(shape->Clone(this)), 
+		  StaticFriction(m->getStaticFriction()), 
+		  DynamicFriction(m->getDynamicFriction()),
+		  Restitution(m->getRestitution()) 
+	{
+		shape->rb = this;
+		this->material = m; 
+		this->position.Set((real)x, (real)y);
+		this->velocity.Set(0.0f, 0.0f);
+		this->AngularVelocity = 0.0f;
+		this->force.Set(0.0f, 0.0f);
+		this->Torque = 0.0f;
+		this->Orient = Random(-PI, PI);
+		//this->StaticFriction = 0.5f;
+		//this->DynamicFriction = 0.3f;
+		//this->Restitution = 0.2f;
+		shape->Init(this);
 		do
 		{
 			r = Random(0.2f, 1.0f);
@@ -26,7 +55,8 @@ namespace Luna
 			&& g >= 0.6 && g <= 0.9
 			&& b >= 0.6 && b <= 0.9);
 	}
-	RigidBody::~RigidBody() {}
+
+	RigidBody::~RigidBody() { std::cout << "body deleted" << std::endl; }
 
 
 	void RigidBody::Force(const Vector2& f)
@@ -48,9 +78,53 @@ namespace Luna
 
 	void RigidBody::SetStatic()
 	{
+		//staticB = true; // DEBUG REASONS	
 		InverseMass = 0.0f;
 		InverseInertia = 0.0f;
 		Mass = 0.0f;
 		Inertia = 0.0f;
+	}
+
+	void RigidBody::SetStaticFriction(real sf)
+	{
+		this->StaticFriction = sf;
+	}
+
+	void RigidBody::SetDynamicFriction(real df)
+	{
+		this->DynamicFriction = df;
+	}
+
+	void RigidBody::SetRestitution(real r)
+	{
+		this->Restitution = r;
+	}
+
+	void RigidBody::SetMaterial(Material* m)
+	{
+		this->material = m; 
+		this->Restitution = m->getRestitution();  
+		this->StaticFriction = m->getStaticFriction();
+		this->DynamicFriction = m->getDynamicFriction(); 
+	}
+
+	real RigidBody::GetStaticFriction() 
+	{
+		return this->StaticFriction;
+	}
+
+	real RigidBody::GetDynamicFriction()
+	{
+		return this->DynamicFriction;
+	}
+
+	real RigidBody::GetRestitution()
+	{
+		return this->Restitution;
+	}
+
+	Material* RigidBody::GetMaterial() 
+	{
+		return this->material;
 	}
 }

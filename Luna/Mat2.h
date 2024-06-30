@@ -2,7 +2,6 @@
 #define MAT2_H
 #include "Vector2.h"
 
-
 namespace Luna
 {
 	class Mat2
@@ -19,7 +18,6 @@ namespace Luna
 			real v[4];
 		};
 
-
 		Mat2();
 		Mat2(real radians);
 		Mat2(real a, real b, real c, real d);
@@ -33,8 +31,6 @@ namespace Luna
 
 		const Vector2 operator*(const Vector2& v) const;
 		const Mat2 operator*(const Mat2& v) const;
-
-
 	};
 }
 

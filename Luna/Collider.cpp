@@ -3,18 +3,17 @@
 namespace Luna
 {
 
-    CollisionCallback Dispatch[Shape::eCount][Shape::eCount] =
+    CollisionCallback Dispatch[Shape::eCount][Shape::eCount] = // 2D array of function pointers
     {
         {
-        CircleToCircle, CircleToPolygon
+        CircleToCircle, CircleToPolygon 
         },
         {
         PolygonToCircle, PolygonToPolygon
         },
     };
 
-
-    void CircleToCircle(Manifold* m, RigidBody* rbA, RigidBody* rbB)
+    void CircleToCircle(Manifold* m, RigidBody* rbA, RigidBody* rbB) // Circle to Circle collision
     {
         Circle* A = (Circle*)rbA->shape;
         Circle* B = (Circle*)rbB->shape;
@@ -49,8 +48,7 @@ namespace Luna
         }
     }
 
-
-    void CircleToPolygon(Manifold* m, RigidBody* rbA, RigidBody* rbB)
+    void CircleToPolygon(Manifold* m, RigidBody* rbA, RigidBody* rbB) // Circle to Polygon collision
     {
         Circle* A = (Circle*)rbA->shape;
         ShapePolygon* B = (ShapePolygon*)rbB->shape;
@@ -143,15 +141,13 @@ namespace Luna
         }
     }
 
-
-    void PolygonToCircle(Manifold* m, RigidBody* rbA, RigidBody* rbB)
+    void PolygonToCircle(Manifold* m, RigidBody* rbA, RigidBody* rbB) // Polygon to Circle collision
     {
         CircleToPolygon(m, rbB, rbA);
         m->normal = (-m->normal);
     }
 
-
-    void PolygonToPolygon(Manifold* m, RigidBody* rbA, RigidBody* rbB)
+    void PolygonToPolygon(Manifold* m, RigidBody* rbA, RigidBody* rbB) // Polygon to Polygon collision
     {
         ShapePolygon* A = (ShapePolygon*)rbA->shape;
         ShapePolygon* B = (ShapePolygon*)rbB->shape;
@@ -226,9 +222,7 @@ namespace Luna
             cp++;
         }
         else
-        {
             m->penetration = 0;
-        }
         separation = Dot(refFaceNormal, incidentFace[1]) - refC;
         if (separation <= 0.0f)
         {
@@ -238,10 +232,9 @@ namespace Luna
             m->penetration /= (real)cp;
         }
         m->contactCount = cp;
-
     }
 
-    void FindIncidentFace(Vector2* v, ShapePolygon* RefPoly, ShapePolygon* IncPoly, uint referenceIndex)
+    void FindIncidentFace(Vector2* v, ShapePolygon* RefPoly, ShapePolygon* IncPoly, uint referenceIndex) // Find the incident face
     {
         Vector2 referenceNormal = RefPoly->normals[referenceIndex];
 
@@ -259,7 +252,6 @@ namespace Luna
                 incidentFace = i;
             }
         }
-
         v[0] = IncPoly->mat * IncPoly->vertices[incidentFace];
         v[0] += IncPoly->rb->position;
         incidentFace = incidentFace + 1 >= (int)IncPoly->vertex_count ? 0 : incidentFace + 1;
@@ -267,7 +259,7 @@ namespace Luna
         v[1] += IncPoly->rb->position;
     }
 
-    real FindAxisLeastPenetration(uint* faceIndex, ShapePolygon* A, ShapePolygon* B)
+    real FindAxisLeastPenetration(uint* faceIndex, ShapePolygon* A, ShapePolygon* B) // Find the axis with the least penetration
     {
         real bestDistance = (-FLT_MAX);
         uint bestIndex = 0;
@@ -300,8 +292,7 @@ namespace Luna
         return bestDistance;
     }
 
-
-    int Clip(Vector2 n, real c, Vector2* face)
+    int Clip(Vector2 n, real c, Vector2* face) // Clip the polygon to the line
     {
         uint sp = 0;
         Vector2 tmp = { 0,0 };
@@ -311,7 +302,6 @@ namespace Luna
 
         if (d1 <= 0.0f) out[sp++] = face[0];
         if (d2 <= 0.0f) out[sp++] = face[1];
-
 
         if (d1 * d2 < 0.0f)
         {
@@ -326,13 +316,10 @@ namespace Luna
             //out[sp] = tmp * alpha + face[0]; 
             //sp++;
         }
-
         face[0] = out[0];
         face[1] = out[1];
 
         assert(sp != 3);
         return sp;
     }
-
-
 }

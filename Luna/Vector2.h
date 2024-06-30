@@ -1,6 +1,5 @@
 #ifndef VECTOR2_H
 #define VECTOR2_H
-
 #include <cmath>
 #include <cassert>
 #include <algorithm>
@@ -166,11 +165,12 @@ namespace Luna
 	*  x = x + v * dt
 	*/
 }
-
-const float deltaTime = 1.0f / 60.0f; // Delta time is the amount of time that has passed since the last frame.
+// Delta time is the amount of time that has passed since the last frame.
+const float deltaTime = 1.0f / 60.0f;
+// Gravity scale is a value that is used to scale the force of gravity.
 const real GRAVITY_S = 5.0f;
+// Gravity is a vector that represents the force of gravity.
 const Luna::Vector2 GRAVITY(0.0f, 9.8f * GRAVITY_S);
-
 
 #endif // !VECTOR2_H
 

@@ -1,21 +1,18 @@
 #ifndef MANIFOLD_H
 #define MANIFOLD_H
 
-//#include "Collider.h"
-
-
 namespace Luna
 {
 	class RigidBody;
-	class Manifold
+	class Manifold // Manifold is a class that holds the information of the collision between two bodies
 	{
 	public:
 		RigidBody* A;
 		RigidBody* B;
 		real penetration;
 		Vector2 normal;
-		Vector2 contacts[2];
-		uint contactCount;
+		Vector2 contacts[2]; 
+		size_t contactCount;
 
 		real e;
 		real dynamicFriction;;
@@ -32,6 +29,5 @@ namespace Luna
 		void InfiniteMassCorrection();
 	};
 }
-
 
 #endif // !MANIFOLD_H

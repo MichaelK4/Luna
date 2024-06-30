@@ -131,9 +131,9 @@
   <ItemGroup>
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Libs.h" />
-    <ClInclude Include="EngineMath.h" />
     <ClInclude Include="Manifold.h" />
     <ClInclude Include="Mat2.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="Scene.h" />

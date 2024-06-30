@@ -1,45 +1,24 @@
 #include "Libs.h"
 
-
 namespace Luna
 {
-	Manifold::Manifold() {}
-	Manifold::Manifold(RigidBody* a, RigidBody* b) : A(a), B(b) {}
+	Manifold::Manifold() {} 
+	Manifold::Manifold(RigidBody* a, RigidBody* b) : A(a), B(b) {} 
 	Manifold::~Manifold() {}
 
 	void Manifold::Solve()
 	{
-		if (/*dynamic_cast<SoftBody*>(A) || dynamic_cast<SoftBody*>(B)*/ A == nullptr)
-		{
-			std::cout << "SoftBody Collision" << std::endl;
-			// remove the body from the world
-			if (dynamic_cast<SoftBody*>(A) && dynamic_cast<SoftBody*>(B))
-			{
-				//Dispatch[A->shape->GetType()][B->shape->GetType()](this, A, B);
-			}
-			else if (dynamic_cast<SoftBody*>(A))
-			{
-				//Dispatch[A->shape->GetType()][B->shape->GetType()](this, A, B);
-			}
-			else
-			{
-				//Dispatch[B->shape->GetType()][A->shape->GetType()](this, A, B);
-			}
-		}
-		else
-		{
-			Dispatch[A->shape->GetType()][B->shape->GetType()](this, A, B);
-		}
+		Dispatch[A->shape->GetType()][B->shape->GetType()](this, A, B);
 	}
 
 	void Manifold::Init()
 	{
 		// Calculate average restitution
-		e = std::min(A->Restitution, B->Restitution);
+		e = std::min(A->GetRestitution(), B->GetRestitution());
 
 		// Calculate static and dynamic friction
-		staticFriction = std::sqrt(A->StaticFriction * A->StaticFriction);
-		dynamicFriction = std::sqrt(A->DynamicFriction * A->DynamicFriction);
+		staticFriction = std::sqrt(A->GetStaticFriction() * A->GetStaticFriction());
+		dynamicFriction = std::sqrt(A->GetDynamicFriction() * A->GetDynamicFriction());
 
 		for (uint i = 0; i < contactCount; i++)
 		{
@@ -54,9 +33,7 @@ namespace Luna
 			// Calculate the relative velocity in terms of the normal direction
 			// the normal component of the relative velocity
 			if (radV.LengthSqr() < (GRAVITY * deltaTime).LengthSqr() + EPSILON)
-			{
 				e = 0.0f;
-			}
 		}
 	}
 
@@ -127,7 +104,6 @@ namespace Luna
 		}
 	}
 
-
 	void Manifold::PositionalCorrection()
 	{
 		const real k_slop = 0.05f; // Penetration allowance - usually 0.01 to 0.1 is good
@@ -143,5 +119,4 @@ namespace Luna
 		A->velocity.Set(0.0f, 0.0f);
 		B->velocity.Set(0.0f, 0.0f);
 	}
-
 }

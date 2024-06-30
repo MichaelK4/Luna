@@ -1,7 +1,6 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 #include "RigidBody.h"
-
 #define MaxPolyCount 128
 
 namespace Luna
@@ -15,26 +14,18 @@ namespace Luna
 			eCount
 		};
 
-		RigidBody* rb;
+		RigidBody* rb; 
+		 
+		Shape() { }
 
-		Shape()
-		{
-
-		}
-
-		virtual Shape* Clone(RigidBody* rb) const = 0
-		{
-			rb = rb;
-		}
+		virtual Shape* Clone(RigidBody* rb) const = 0 { rb = rb; }
 		virtual void Init(RigidBody* rb) = 0;
 		virtual void ComputeMass(real density, RigidBody* rb) = 0;
 		virtual void SetOrient(real radians) = 0;
 		virtual void Draw(RigidBody* rb) = 0;
 		virtual ShapeType GetType() const = 0;
 
-
 		real radius;
-
 
 		Mat2 mat;
 	};
@@ -73,33 +64,47 @@ namespace Luna
 		{
 			const uint k_segments = 20;
 
-			glColor3f(rb->r, rb->g, rb->b);
-			//glBegin(GL_LINE_LOOP); // Circle with a lot of lines
+			glColor4f(rb->r, rb->g, rb->b, 0.5f);
 			glBegin(GL_TRIANGLE_FAN);
-			real theta = rb->Orient;
-			real increment = PI * 2.0f / real(k_segments);
-			for (uint i = 0; i < k_segments; i++)
-			{
-				theta += increment;
-				Vector2 p(cos(theta), sin(theta));
-				p *= radius;
-				p += rb->position;
-				glVertex2f(p.x, p.y);
-			}
+				real theta = rb->Orient;
+				real increment = PI * 2.0f / real(k_segments);
+				for (uint i = 0; i < k_segments; i++)
+				{
+					theta += increment;
+					Vector2 p(cos(theta), sin(theta));
+					p *= radius;
+					p += rb->position;
+					glVertex2f(p.x, p.y);
+				}
+			glEnd();
+
+			glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
+			glLineWidth(2.0f);
+			glBegin(GL_LINE_LOOP);
+				theta = rb->Orient;
+				increment = PI * 2.0f / real(k_segments);
+				for (uint i = 0; i < k_segments; i++)
+				{
+					theta += increment;
+					Vector2 p(cos(theta), sin(theta));
+					p *= radius;
+					p += rb->position;
+					glVertex2f(p.x, p.y);
+				}
 			glEnd();
 
 			// Draw line to show rotation
-			//glColor3f(1.0f, 1.0f, 1.0f);
+			glLineWidth(4.0f);
 			glBegin(GL_LINE_STRIP);
-			glColor3f(1.0f, 1.0f, 1.0f);
-			Vector2 r(0, 1.0f);
-			real c = cos(rb->Orient);
-			real s = sin(rb->Orient);
-			r.Set(r.x * c - r.y * s, r.x * s + r.y * c);
-			r *= radius;
-			r += rb->position;
-			glVertex2f(rb->position.x, rb->position.y);
-			glVertex2f(r.x, r.y);
+				glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
+				Vector2 r(0, 1.0f);
+				real c = cos(rb->Orient);
+				real s = sin(rb->Orient);
+				r.Set(r.x * c - r.y * s, r.x * s + r.y * c);
+				r *= radius;
+				r += rb->position;
+				glVertex2f(rb->position.x, rb->position.y);
+				glVertex2f(r.x, r.y);
 			glEnd();
 		}
 
@@ -114,11 +119,6 @@ namespace Luna
 		uint vertex_count;
 		Vector2 vertices[MaxPolyCount];
 		Vector2 normals[MaxPolyCount];
-
-		//ShapePolygon(RigidBody* rb) : Shape(rb) 
-		//{
-		//	vertex_count = 0; 
-		//}
 
 		Shape* Clone(RigidBody* rb) const override
 		{
@@ -166,9 +166,7 @@ namespace Luna
 			centroid *= 1.0f / area;
 
 			for (uint i = 0; i < vertex_count; i++)
-			{
 				vertices[i] -= centroid;
-			}
 
 			rb->Mass = density * area;
 			rb->InverseMass = (rb->Mass) ? 1.0f / rb->Mass : 0.0f;
@@ -183,15 +181,25 @@ namespace Luna
 
 		void Draw(RigidBody* rb) override
 		{
-			glColor3f(rb->r, rb->g, rb->b);
-			//glBegin(GL_LINE_LOOP);
+
+			glColor4f(rb->r, rb->g, rb->b, 0.5f); 
 			glBegin(GL_POLYGON);
-			for (uint i = 0; i < vertex_count; i++)
-			{
-				Vector2 v = rb->position + mat * vertices[i];
-				glVertex2f(v.x, v.y);
-			}
+				for (uint i = 0; i < vertex_count; i++)
+				{
+					Vector2 v = rb->position + mat * vertices[i];
+					glVertex2f(v.x, v.y);
+				}
 			glEnd();
+
+			glLineWidth(2.0f); 
+			glColor4f(1.0f, 1.0f, 1.0f, 0.8f); // White color for the outline
+			glBegin(GL_LINE_LOOP); 
+				for (uint i = 0; i < vertex_count; i++) 
+				{
+					Vector2 v = rb->position + mat * vertices[i];  
+					glVertex2f(v.x, v.y); 
+				} 
+			glEnd(); 
 		}
 
 		ShapeType GetType() const
@@ -233,9 +241,7 @@ namespace Luna
 				else if (x == highestXCoord)
 				{
 					if (vec[i].y < vec[rightMost].y)
-					{
 						rightMost = i;
-					}
 				}
 			}
 
@@ -259,14 +265,10 @@ namespace Luna
 					Vector2 e2 = vec[i] - vec[hull[outCount]];
 					real c = Cross(e1, e2);
 					if (c < 0.0f)
-					{
 						nextHullIndex = i;
-					}
 
 					if (c == 0.0f && e2.LengthSqr() > e1.LengthSqr())
-					{
 						nextHullIndex = i;
-					}
 				}
 
 				outCount++;
@@ -280,9 +282,7 @@ namespace Luna
 			}
 
 			for (uint i = 0; i < vertex_count; i++)
-			{
 				vertices[i] = vec[hull[i]];
-			}
 
 			for (uint i = 0; i < vertex_count; i++)
 			{
@@ -312,12 +312,9 @@ namespace Luna
 					bestProjection = projection;
 				}
 			}
-
 			return bestVertex;
 		}
 	};
-
 }
-
 
 #endif // !SHAPE_H
