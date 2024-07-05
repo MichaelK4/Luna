@@ -20,7 +20,7 @@ namespace Luna
 		staticFriction = std::sqrt(A->GetStaticFriction() * A->GetStaticFriction());
 		dynamicFriction = std::sqrt(A->GetDynamicFriction() * A->GetDynamicFriction());
 
-		for (uint i = 0; i < contactCount; i++)
+		for (size_t i = 0; i < contactCount; i++)
 		{
 			// Calculate radius from center of mass to contact - is the vector from the center of mass to the contact point
 			Vector2 radA = contacts[i] - A->position;
@@ -46,14 +46,14 @@ namespace Luna
 			return;
 		}
 
-		for (uint i = 0; i < contactCount; i++)
+		for (size_t i = 0; i < contactCount; i++)
 		{
 			// Calculate radius from center of mass to contact - is the vector from the center of mass to the contact point
 			Vector2 radA = contacts[i] - A->position;
 			Vector2 radB = contacts[i] - B->position;
 
 			Vector2 radV = B->velocity + Cross(B->AngularVelocity, radB)
-				- A->velocity - Cross(A->AngularVelocity, radA); // Relative velocity
+					     - A->velocity - Cross(A->AngularVelocity, radA); // Relative velocity
 
 			real contactVel = Dot(radV, normal); // the normal component of the relative velocity
 
@@ -63,9 +63,8 @@ namespace Luna
 			real radACrossN = Cross(radA, normal);
 			real radBCrossN = Cross(radB, normal);
 			real invMassSum = A->InverseMass + B->InverseMass +
-				Sqr(radACrossN) * A->InverseInertia +
+			 	Sqr(radACrossN) * A->InverseInertia +
 				Sqr(radBCrossN) * B->InverseInertia; // the denominator of the impulse calculation
-
 
 			// the impulse scalar
 			real j = -(1.0f + e) * contactVel;

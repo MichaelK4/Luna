@@ -7,7 +7,7 @@ namespace Luna
 {
 	struct Shape
 	{
-		enum ShapeType
+		enum ShapeType // Enum for the shape type
 		{
 			eCircle,
 			ePolygon,
@@ -16,30 +16,30 @@ namespace Luna
 
 		RigidBody* rb; 
 		 
-		Shape() { }
+		Shape() { } // Default constructor
 
-		virtual Shape* Clone(RigidBody* rb) const = 0 { rb = rb; }
-		virtual void Init(RigidBody* rb) = 0;
-		virtual void ComputeMass(real density, RigidBody* rb) = 0;
-		virtual void SetOrient(real radians) = 0;
-		virtual void Draw(RigidBody* rb) = 0;
-		virtual ShapeType GetType() const = 0;
+		virtual Shape* Clone(RigidBody* rb) const = 0 { rb = rb; } // Clone function to create a new shape
+		virtual void Init(RigidBody* rb) = 0; // Initialize the shape
+		virtual void ComputeMass(real density, RigidBody* rb) = 0; // Compute the mass of the shape
+		virtual void SetOrient(real radians) = 0; // Set the orientation of the shape
+		virtual void Draw(RigidBody* rb) = 0; // Draw the shape
+		virtual ShapeType GetType() const = 0; // Get the type of the shape
 
-		real radius;
+		real radius; // Radius of the shape
 
-		Mat2 mat;
+		Mat2 mat; // Matrix for the shape
 	};
 
-	struct Circle : public Shape
+	struct ShapeCircle : public Shape
 	{
-		Circle(real r)
+		ShapeCircle(real r)
 		{
 			radius = r;
 		}
 
 		Shape* Clone(RigidBody* rb) const override
 		{
-			return new Circle(radius);
+			return new ShapeCircle(radius);
 		}
 
 		void Init(RigidBody* rb)
@@ -62,13 +62,13 @@ namespace Luna
 
 		void Draw(RigidBody* rb) override
 		{
-			const uint k_segments = 20;
+			const size_t k_segments = 20; 
 
 			glColor4f(rb->r, rb->g, rb->b, 0.5f);
 			glBegin(GL_TRIANGLE_FAN);
 				real theta = rb->Orient;
 				real increment = PI * 2.0f / real(k_segments);
-				for (uint i = 0; i < k_segments; i++)
+				for (size_t i = 0; i < k_segments; i++) 
 				{
 					theta += increment;
 					Vector2 p(cos(theta), sin(theta));
@@ -83,7 +83,7 @@ namespace Luna
 			glBegin(GL_LINE_LOOP);
 				theta = rb->Orient;
 				increment = PI * 2.0f / real(k_segments);
-				for (uint i = 0; i < k_segments; i++)
+				for (size_t i = 0; i < k_segments; i++)
 				{
 					theta += increment;
 					Vector2 p(cos(theta), sin(theta));
@@ -116,7 +116,7 @@ namespace Luna
 
 	struct ShapePolygon : public Shape
 	{
-		uint vertex_count;
+		size_t vertex_count;
 		Vector2 vertices[MaxPolyCount];
 		Vector2 normals[MaxPolyCount];
 
@@ -124,7 +124,7 @@ namespace Luna
 		{
 			ShapePolygon* poly = new ShapePolygon();
 			poly->mat = mat;
-			for (uint i = 0; i < vertex_count; i++)
+			for (size_t i = 0; i < vertex_count; i++)
 			{
 				poly->vertices[i] = vertices[i];
 				poly->normals[i] = normals[i];
@@ -145,10 +145,10 @@ namespace Luna
 			real I = 0.0f;
 			const real k_inv3 = 1.0f / 3.0f;
 
-			for (uint i = 0; i < vertex_count; i++)
+			for (size_t i = 0; i < vertex_count; i++)
 			{
 				Vector2 p(vertices[i]);
-				uint next = i + 1 < vertex_count ? i + 1 : 0;
+				size_t next = i + 1 < vertex_count ? i + 1 : 0;
 				Vector2 q(vertices[next]);
 
 				real D = Cross(p, q);
@@ -165,7 +165,7 @@ namespace Luna
 
 			centroid *= 1.0f / area;
 
-			for (uint i = 0; i < vertex_count; i++)
+			for (size_t i = 0; i < vertex_count; i++)
 				vertices[i] -= centroid;
 
 			rb->Mass = density * area;
@@ -184,7 +184,7 @@ namespace Luna
 
 			glColor4f(rb->r, rb->g, rb->b, 0.5f); 
 			glBegin(GL_POLYGON);
-				for (uint i = 0; i < vertex_count; i++)
+				for (size_t i = 0; i < vertex_count; i++)
 				{
 					Vector2 v = rb->position + mat * vertices[i];
 					glVertex2f(v.x, v.y);
@@ -194,7 +194,7 @@ namespace Luna
 			glLineWidth(2.0f); 
 			glColor4f(1.0f, 1.0f, 1.0f, 0.8f); // White color for the outline
 			glBegin(GL_LINE_LOOP); 
-				for (uint i = 0; i < vertex_count; i++) 
+				for (size_t i = 0; i < vertex_count; i++)
 				{
 					Vector2 v = rb->position + mat * vertices[i];  
 					glVertex2f(v.x, v.y); 
@@ -222,15 +222,15 @@ namespace Luna
 			normals[3].Set(-1.0f, 0.0f);
 		}
 
-		void Set(Vector2* vec, uint count)
+		void Set(Vector2* vec, size_t count)
 		{
 			assert(count > 2 && count < MaxPolyCount);
-			count = std::min((uint)MaxPolyCount, count);
+			count = std::min((size_t)MaxPolyCount, count);
 
 			// Find the right most point on the hull
 			int rightMost = 0;
 			real highestXCoord = vec[0].x;
-			for (uint i = 1; i < count; i++)
+			for (size_t i = 1; i < count; i++)
 			{
 				real x = vec[i].x;
 				if (x > highestXCoord)
@@ -281,12 +281,12 @@ namespace Luna
 				}
 			}
 
-			for (uint i = 0; i < vertex_count; i++)
+			for (size_t i = 0; i < vertex_count; i++)
 				vertices[i] = vec[hull[i]];
 
-			for (uint i = 0; i < vertex_count; i++)
+			for (size_t i = 0; i < vertex_count; i++)
 			{
-				uint i2 = i + 1 < vertex_count ? i + 1 : 0;
+				size_t i2 = i + 1 < vertex_count ? i + 1 : 0;
 				Vector2 face = vertices[i2] - vertices[i];
 
 				assert(face.LengthSqr() > EPSILON * EPSILON);
@@ -301,7 +301,7 @@ namespace Luna
 			real bestProjection = -FLT_MAX;
 			Vector2 bestVertex;
 
-			for (uint i = 0; i < vertex_count; i++)
+			for (size_t i = 0; i < vertex_count; i++)
 			{
 				Vector2 v = vertices[i];
 				real projection = Dot(v, dir);

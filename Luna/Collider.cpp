@@ -2,55 +2,57 @@
 
 namespace Luna
 {
-
-    CollisionCallback Dispatch[Shape::eCount][Shape::eCount] = // 2D array of function pointers
+    // 2D array of collision detection function pointers
+    CollisionCallback Dispatch[Shape::eCount][Shape::eCount] =
     {
-        {
-        CircleToCircle, CircleToPolygon 
-        },
-        {
-        PolygonToCircle, PolygonToPolygon
-        },
+        { CircleToCircle, CircleToPolygon },
+        { PolygonToCircle, PolygonToPolygon },
     };
 
     void CircleToCircle(Manifold* m, RigidBody* rbA, RigidBody* rbB) // Circle to Circle collision
     {
-        Circle* A = (Circle*)rbA->shape;
-        Circle* B = (Circle*)rbB->shape;
+        // Cast the shapes to circle type
+        ShapeCircle* A = (ShapeCircle*)rbA->shape;
+        ShapeCircle* B = (ShapeCircle*)rbB->shape;
 
-        // Calculate translational vector - the direction of collision from A to B
+        // Calculate the translational vector (normal) from circle A to circle B
         Vector2 normal = rbB->position - rbA->position;
 
+        // Compute the squared distance between the circles' centers
         real distSqr = normal.LengthSqr();
+        // Sum of the radii of both circles
         real radius = A->radius + B->radius;
 
-        // Check if circles are colliding
+        // Check if the circles are colliding by comparing the squared distance to the squared radii sum
         if (distSqr >= radius * radius)
         {
-            m->contactCount = 0;
+            m->contactCount = 0; // No collision
             return;
         }
-
+        // Compute the actual distance between the circles' centers
         real dist = std::sqrt(distSqr); // perform actual sqrt
-        m->contactCount = 1;
+        m->contactCount = 1; // There is one contact point
 
-        if (dist == 0.0f)
+        if (dist == 0.0f) // If the circles are exactly on top of each other
         {
-            m->penetration = A->radius;
-            m->normal = Vector2(1, 0);
-            m->contacts[0] = rbA->position;
+            // The circles are coincident; use an arbitrary normal and set penetration to the radius of A
+            m->penetration = A->radius; // Penetration depth
+            m->normal = Vector2(1, 0); // Arbitrary normal
+            m->contacts[0] = rbA->position; // Contact point is the position of circle A
         }
         else
         {
-            m->penetration = radius - dist;
-            m->normal = normal / dist;
-            m->contacts[0] = m->normal * A->radius + rbA->position;
+            // Circles are overlapping but not coincident
+            m->penetration = radius - dist; // Penetration depth
+            m->normal = normal / dist; // Normalize the collision normal
+            m->contacts[0] = m->normal * A->radius + rbA->position; // Compute the contact point
         }
     }
 
     void CircleToPolygon(Manifold* m, RigidBody* rbA, RigidBody* rbB) // Circle to Polygon collision
     {
-        Circle* A = (Circle*)rbA->shape;
+        // Cast shapes to Circle and Polygon types
+        ShapeCircle* A = (ShapeCircle*)rbA->shape;
         ShapePolygon* B = (ShapePolygon*)rbB->shape;
 
         m->contactCount = 0;
@@ -62,9 +64,9 @@ namespace Luna
         // Find edge with minimum penetration - this is the edge that needs to be clipped
         // The concept is using support points in polygon v polygon to find the closest edge to the circle
         real separation = -FLT_MAX;
-        uint faceNormal = 0;
+        size_t faceNormal = 0;
 
-        for (uint i = 0; i < B->vertex_count; i++)
+        for (size_t i = 0; i < B->vertex_count; i++)
         {
             real dist = Dot(B->normals[i], center - B->vertices[i]);
 
@@ -80,7 +82,7 @@ namespace Luna
 
         // Grab face's vertices - we need to find the closest edge
         Vector2 v1 = B->vertices[faceNormal];
-        uint i2 = faceNormal + 1 < B->vertex_count ? faceNormal + 1 : 0;
+        size_t i2 = faceNormal + 1 < B->vertex_count ? faceNormal + 1 : 0;
         Vector2 v2 = B->vertices[i2];
 
         // Check to see if the center is within the polygon
@@ -153,17 +155,17 @@ namespace Luna
         ShapePolygon* B = (ShapePolygon*)rbB->shape;
 
         m->contactCount = 0;
-        uint faceA;
+        size_t faceA;
         real penetrationA = FindAxisLeastPenetration(&faceA, A, B);
         if (penetrationA >= 0.0f)
             return;
 
-        uint faceB;
+        size_t faceB;
         real penetrationB = FindAxisLeastPenetration(&faceB, B, A);
         if (penetrationB >= 0.0f)
             return;
 
-        uint referenceIndex;
+        size_t referenceIndex;
         bool flip; // point from a to b all the time
 
         ShapePolygon* RefPoly;
@@ -213,7 +215,7 @@ namespace Luna
 
         m->normal = flip ? (-refFaceNormal) : refFaceNormal;
 
-        uint cp = 0;
+        size_t cp = 0;
         real separation = Dot(refFaceNormal, incidentFace[0]) - refC;
         if (separation <= 0.0f)
         {
@@ -234,7 +236,7 @@ namespace Luna
         m->contactCount = cp;
     }
 
-    void FindIncidentFace(Vector2* v, ShapePolygon* RefPoly, ShapePolygon* IncPoly, uint referenceIndex) // Find the incident face
+    void FindIncidentFace(Vector2* v, ShapePolygon* RefPoly, ShapePolygon* IncPoly, size_t referenceIndex) // Find the incident face 
     {
         Vector2 referenceNormal = RefPoly->normals[referenceIndex];
 
@@ -243,7 +245,7 @@ namespace Luna
 
         int incidentFace = 0;
         real minDot = FLT_MAX;
-        for (uint i = 0; i < IncPoly->vertex_count; i++)
+        for (size_t i = 0; i < IncPoly->vertex_count; i++)
         {
             real dot = Dot(referenceNormal, IncPoly->normals[i]);
             if (dot < minDot)
@@ -259,12 +261,12 @@ namespace Luna
         v[1] += IncPoly->rb->position;
     }
 
-    real FindAxisLeastPenetration(uint* faceIndex, ShapePolygon* A, ShapePolygon* B) // Find the axis with the least penetration
+    real FindAxisLeastPenetration(size_t* faceIndex, ShapePolygon* A, ShapePolygon* B) // Find the axis with the least penetration
     {
         real bestDistance = (-FLT_MAX);
-        uint bestIndex = 0;
+        size_t bestIndex = 0;
 
-        for (uint i = 0; i < A->vertex_count; i++)
+        for (size_t i = 0; i < A->vertex_count; i++)
         {
             Vector2 n = A->normals[i];
             Vector2 nw = A->mat * n;
@@ -294,7 +296,7 @@ namespace Luna
 
     int Clip(Vector2 n, real c, Vector2* face) // Clip the polygon to the line
     {
-        uint sp = 0;
+        size_t sp = 0;
         Vector2 tmp = { 0,0 };
         Vector2 out[2] = { face[0], face[1] };
         real d1 = Dot(n, face[0]) - c;
@@ -306,15 +308,12 @@ namespace Luna
         if (d1 * d2 < 0.0f)
         {
             real alpha = d1 / (d1 - d2);
-            //out[sp] = (face[1] - face[0]) * alpha;
             tmp = (face[1] - face[0]);
             if (sp < 2)
             {
                 out[sp] = tmp * alpha + face[0];
                 sp++;
             }
-            //out[sp] = tmp * alpha + face[0]; 
-            //sp++;
         }
         face[0] = out[0];
         face[1] = out[1];

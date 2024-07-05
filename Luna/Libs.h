@@ -6,15 +6,13 @@
 #endif 
 
 #define ESC 27 // ESC is a macro that represents the ASCII value of the escape key.
-#define RIGID_BODY 100 // RIGID_BODY is a macro that represents the type of a rigid body.
-#define SOFT_BODY 101 // SOFT_BODY is a macro that represents the type of a soft body.
 #define WIDTH 800 // 800
 #define HEIGHT 600 // 600
 
 /* Windows is a library that provides
 functions for working with the
 Windows operating system. */
-#include <Windows.h>
+//#include <Windows.h>
 
 /* algorithm is a library that provides a
 collection of functions for working with
@@ -39,15 +37,12 @@ arrays and other data structures.*/
 
 // ENGINE
 #include "glut.h"
-//#include "Vector2.h"
 #include "Mat2.h"
-#include "Clock.h"
+#include "Clock.h" 
 #include "RigidBody.h"
 #include "Shape.h"
 #include "Collider.h"
 #include "Manifold.h"
 #include "Scene.h"
 
-
 #endif // !LIBS_H
-

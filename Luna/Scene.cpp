@@ -1,7 +1,6 @@
 #include "Libs.h"
 #include "Material.h" 
 
-//int rb_num = 0;
 namespace Luna
 {
 	Scene::Scene()
@@ -12,7 +11,7 @@ namespace Luna
 		AddMaterials(); // add materials to menu 
 	}
 
-	Scene::Scene(real deltaTime, uint iterations) : deltaTime(deltaTime), iterations(iterations) 
+	Scene::Scene(real deltaTime, size_t iterations) : deltaTime(deltaTime), iterations(iterations)
 	{ 
 		surfaceRB = nullptr; 
 		AddMaterials(); // add materials to menu 
@@ -76,10 +75,10 @@ namespace Luna
 		contacts.clear();
 
 		// generate contacts
-		for (uint i = 0; i < bodies.size(); i++)
+		for (size_t i = 0; i < bodies.size(); i++)
 		{
 			RigidBody* rbA = bodies[i];
-			for (uint j = i + 1; j < bodies.size(); j++)
+			for (size_t j = i + 1; j < bodies.size(); j++)
 			{
 				RigidBody* rbB = bodies[j];
 				if (rbA->InverseMass == 0 && rbB->InverseMass == 0)
@@ -92,20 +91,20 @@ namespace Luna
 		}
 
 		// integrate forces
-		for (uint i = 0; i < bodies.size(); i++)
+		for (size_t i = 0; i < bodies.size(); i++)
 			IntegradeForces(bodies[i], deltaTime);
 
 		// initialize collision
-		for (uint i = 0; i < contacts.size(); i++)
+		for (size_t i = 0; i < contacts.size(); i++)
 			contacts[i].Init();
 
 		// solve collisions
-		for (uint j = 0; j < iterations; j++)
-			for (uint i = 0; i < contacts.size(); i++)
+		for (size_t j = 0; j < iterations; j++)
+			for (size_t i = 0; i < contacts.size(); i++)
 				contacts[i].ApplyImpulse();
 
 		// integrate velocity
-		for (uint i = 0; i < bodies.size(); i++)
+		for (size_t i = 0; i < bodies.size(); i++)
 		{
 			
 			RigidBody* b = bodies[i];
@@ -118,31 +117,17 @@ namespace Luna
 
 			if (outOfBounds)
 			{
-				// DEBUGGING REASONS
-				/* std::cout << "Body num:" << rb_num << " at position" << "(" << b->position.x << ", " << b->position.y
-					<< ") with radius " << brad << " is out of bounds." << std::endl; */
 				delete b;
 				bodies.erase(bodies.begin() + i);
 			}
-			// DEBUGGING REASONS
-			/*else
-			{
-				if (!b->isStatic())
-				{
-					
-					std::cout << "Body num:" << rb_num << " at position" << "(" << b->position.x << ", " << b->position.y
-						<< ") with radius " << brad << " is out of bounds But don't dissaper" << std::endl;
-					b->staticB = true; 
-				}
-			}*/
 		}
 
 		// correct positions
-		for (uint i = 0; i < contacts.size(); i++)
+		for (size_t i = 0; i < contacts.size(); i++)
 			contacts[i].PositionalCorrection();
 
 		// clear all forces
-		for (uint i = 0; i < bodies.size(); i++)
+		for (size_t i = 0; i < bodies.size(); i++)
 		{
 			RigidBody* body = bodies[i];
 			body->force.Set(0, 0);
@@ -152,7 +137,7 @@ namespace Luna
 
 	void Scene::Render()
 	{
-		for (uint i = 0; i < bodies.size(); i++)
+		for (size_t i = 0; i < bodies.size(); i++)
 		{
 			RigidBody* body = bodies[i];
 			body->shape->Draw(body);
@@ -161,10 +146,10 @@ namespace Luna
 		glBegin(GL_POINTS);
 			// Change color for contact points
 			glColor4f(1.0f, 0.0f, 0.0f, 0.8f); // Red color for contact points
-			for (uint i = 0; i < contacts.size(); i++)
+			for (size_t i = 0; i < contacts.size(); i++)
 			{
 				Manifold& m = contacts[i];
-				for (uint j = 0; j < m.contactCount; j++)
+				for (size_t j = 0; j < m.contactCount; j++)
 				{
 					Vector2 c = m.contacts[j];
 					glVertex2f(c.x, c.y);
@@ -177,12 +162,12 @@ namespace Luna
 		glBegin(GL_LINES);
 			// Change color for collision normals
 			glColor4f(0.0f, 0.0f, 1.0f, 0.8f); // Blue color for collision normals
-			for (uint i = 0; i < contacts.size(); i++)
+			for (size_t i = 0; i < contacts.size(); i++)
 			{
 				Manifold& m = contacts[i];
 				Vector2 v = m.normal;
 
-				for (uint j = 0; j < m.contactCount; j++)
+				for (size_t j = 0; j < m.contactCount; j++)
 				{
 					Vector2 c = m.contacts[j];
 					glVertex2f(c.x, c.y);
@@ -195,9 +180,8 @@ namespace Luna
 		glLineWidth(1.0f);
 	}
 
-	RigidBody* Scene::Add(Shape* shape, uint x, uint y)
+	RigidBody* Scene::Add(Shape* shape, size_t x, size_t y)
 	{
-		//rb_num++;
 		assert(shape);
 		RigidBody* rb = new RigidBody(shape, x, y);
 		rb->shape->rb = shape->rb;
@@ -205,7 +189,7 @@ namespace Luna
 		return rb;
 	}
 
-	RigidBody* Scene::Add(Shape* shape, uint x, uint y, size_t i)
+	RigidBody* Scene::Add(Shape* shape, size_t x, size_t y, size_t i)
 	{
 		assert(shape);
 		RigidBody* rb = new RigidBody(shape, x, y, objectMaterials[i]); 
@@ -213,16 +197,6 @@ namespace Luna
 		bodies.push_back(rb);
 		return rb;
 	}
-
-	/*SoftBody* Scene::AddSoft(Shape* shape, uint x, uint y)
-	{
-		assert(shape);
-		SoftBody* sb = new SoftBody(shape, x, y);
-		sb->shape->rb = shape->rb;
-		bodies.push_back(sb);
-		return sb;
-	}*/
-
 
 	void Scene::StrOnScene(int x, int y, const char* s)
 	{
@@ -233,34 +207,32 @@ namespace Luna
 			glutBitmapCharacter(GLUT_BITMAP_9_BY_15, *(s + i));
 	}
 
-
-	void Scene::DrawMenu(bool menu, bool custom, bool surface, int selectedMaterialIndex, real* restitution, real* dynamicFriction, real* staticFriction)  
+	void Scene::DrawMenu(bool menu, bool custom, bool surface, size_t selectedMaterialIndex, real* restitution, real* dynamicFriction, real* staticFriction)
 	{
 		if (!menu) return;
-
 
 		glColor3f(0.2f, 0.2f, 0.2f);
 		glRectf(10, 3, 70, 50);
 
 		glColor3f(1.0f, 1.0f, 1.0f);
-		StrOnScene(12, 6, "Settings Menu");
+		StrOnScene(33, 6, "Settings Menu");
 		StrOnScene(12, 8, "Press 'M' to close menu");
-		StrOnScene(12, 10, "Press C to go to deufault settings, Press U to change surface"); 
+		StrOnScene(12, 10, "Press 'C' to go to deufault settings, Press 'U' to change surface"); 
 		if (!surface) 
 		{
 			if (custom)
 			{
 				StrOnScene(12, 12, "[Custom]");
 				StrOnScene(12, 14, "Press 'T' to switch to Predefined");
-				StrOnScene(12, 25, "R: Restitution");
-				StrOnScene(12, 35, "D: Dynamic Friction");
+				StrOnScene(12, 35, "R: Restitution");
+				StrOnScene(12, 40, "D: Dynamic Friction");
 				StrOnScene(12, 45, "S: Static Friction");
 
 				char buffer[50];
 				sprintf_s(buffer, "Restitution: %.2f", *restitution);
-				StrOnScene(40, 25, buffer);
-				sprintf_s(buffer, "Dyn. Friction: %.2f", *dynamicFriction);
 				StrOnScene(40, 35, buffer);
+				sprintf_s(buffer, "Dyn. Friction: %.2f", *dynamicFriction);
+				StrOnScene(40, 40, buffer);
 				sprintf_s(buffer, "Stat. Friction: %.2f", *staticFriction);
 				StrOnScene(40, 45, buffer);
 			}
@@ -271,7 +243,7 @@ namespace Luna
 				StrOnScene(12, 16, "Press 'N' for next and 'P' to go back");
 				glColor3f(1.0f, 1.0f, 1.0f);
 				StrOnScene(15, 20, "<- ");
-				for (size_t i = 0; i < materialCountObject; i++)
+				for (int i = 0; i < materialCountObject; i++)
 				{
 					if (i == selectedMaterialIndex)
 					{
@@ -285,10 +257,10 @@ namespace Luna
 				char buffer[50];
 				sprintf_s(buffer, "Restitution: %.2f", selectedMaterial->getRestitution());
 				*restitution = selectedMaterial->getRestitution();  
-				StrOnScene(12, 25, buffer);
+				StrOnScene(12, 35, buffer);
 				sprintf_s(buffer, "Dynamic Friction: %.2f", selectedMaterial->getDynamicFriction());
 				*dynamicFriction = selectedMaterial->getDynamicFriction(); 
-				StrOnScene(12, 35, buffer);
+				StrOnScene(12, 40, buffer);
 				sprintf_s(buffer, "Static Friction: %.2f", selectedMaterial->getStaticFriction());
 				*staticFriction = selectedMaterial->getStaticFriction();  
 				StrOnScene(12, 45, buffer);
@@ -296,10 +268,10 @@ namespace Luna
 		}
 		else
 		{
-				StrOnScene(12, 16, "Press 'N' for next and 'P' to go back"); 
+				StrOnScene(12, 12, "Press 'N' for next and 'P' to go back"); 
 				glColor3f(1.0f, 1.0f, 1.0f); 
 				StrOnScene(15, 20, "<- "); 
-				for (size_t i = 0; i < materialCountSurface; i++) 
+				for (int i = 0; i < materialCountSurface; i++) 
 				{
 					if (i == selectedMaterialIndex) 
 					{
@@ -313,10 +285,10 @@ namespace Luna
 				char buffer[50];
 				sprintf_s(buffer, "Restitution: %.2f", selectedMaterial->getRestitution());
 				surfaceRB->SetRestitution(selectedMaterial->getRestitution()); 
-				StrOnScene(12, 25, buffer);
+				StrOnScene(12, 35, buffer);
 				sprintf_s(buffer, "Dynamic Friction: %.2f", selectedMaterial->getDynamicFriction());
 				surfaceRB->SetDynamicFriction(selectedMaterial->getDynamicFriction());
-				StrOnScene(12, 35, buffer);
+				StrOnScene(12, 40, buffer);
 				sprintf_s(buffer, "Static Friction: %.2f", selectedMaterial->getStaticFriction());
 				surfaceRB->SetStaticFriction(selectedMaterial->getStaticFriction());
 				StrOnScene(12, 45, buffer);
@@ -327,7 +299,6 @@ namespace Luna
 	{
 		FILE* f = nullptr;
 		errno_t err = fopen_s(&f, filename, "rb");
-		//FILE fp = fopen_s(&fp, filename, "rb");
 		if (!f)
 		{
 			std::cerr << "Error opening the file" << std::endl;
@@ -364,12 +335,9 @@ namespace Luna
 			GLuint tmp = GetLogoTexture();
 			glGenTextures(1, &tmp); 
 			glBindTexture(GL_TEXTURE_2D, GetLogoTexture());
-
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, image);
-
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 			delete[] image;
 		}
 	}
@@ -381,11 +349,8 @@ namespace Luna
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		gluOrtho2D(0, WIDTH, HEIGHT, 0); // Set orthogonal projection to match window dimensions
-
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-
-		//StrOnScene(10, 5, "Press 'Space' to start engine");
 
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, GetLogoTexture());
@@ -404,15 +369,12 @@ namespace Luna
 
 	void Scene::ShowOnDisplay()
 	{
-		Circle circle(4.0f);
+		ShapeCircle circle(4.0f);
 		RigidBody* rb = Add(&circle, 20, 30);
 		Material* material;
 
 		material = surfaceMaterials[2];
 		rb->SetMaterial(material);
-		//rb->SetRestitution(0.1f);  
-		//rb->SetDynamicFriction(0.7f);  
-		//rb->SetStaticFriction(0.9f);  
 		rb->SetStatic();
 		rb->SetOrient(PI);
 		std::cout << "Circle: Restitution: " << rb->GetRestitution() << " Dynamic Friction: " << rb->GetDynamicFriction() << " Static Friction: " << rb->GetStaticFriction() << std::endl; 
@@ -422,28 +384,18 @@ namespace Luna
 		surfaceRB = Add(&poly, 40, 55);  
 		material = surfaceMaterials[0]; 
 		surfaceRB->SetMaterial(material);
-		//surfaceRB->SetRestitution(0.3f);
-		//surfaceRB->SetDynamicFriction(0.4f);
-		//surfaceRB->SetStaticFriction(0.5f); 
 		surfaceRB->SetStatic();
 		surfaceRB->SetOrient(0);
 		std::cout << "Poly: Restitution: " << surfaceRB->GetRestitution() << " Dynamic Friction: " << surfaceRB->GetDynamicFriction() << " Static Friction: " << surfaceRB->GetStaticFriction() << std::endl;
 
 		ShapePolygon diagPoly;
-		//Vector2 diagVec[4] = { Vector2(-1, -1),Vector2(1, -1),
-									//Vector2(8, 8), Vector2(-8, 8) };
-		//diagPoly.Set(diagVec, 4);
 		diagPoly.SetBox(10.0f, 1.0f);
 		RigidBody* rbDiag = Add(&diagPoly, 70, 30);
 		material = surfaceMaterials[1];
 		rbDiag->SetMaterial(material);
-		//rbDiag->SetRestitution(0.05f); 
-		//rbDiag->SetDynamicFriction(0.05f); 
-		//rbDiag->SetStaticFriction(0.1f); 
 		rbDiag->SetStatic(); 
 		rbDiag->SetOrient(-PI / 6);
-		std::cout << "diagPoly: Restitution: " << rbDiag->GetRestitution() << " Dynamic Friction: " << rbDiag->GetDynamicFriction() << " Static Friction: " << rbDiag->GetStaticFriction() << std::endl;  
-
+		std::cout << "DiagPoly: Restitution: " << rbDiag->GetRestitution() << " Dynamic Friction: " << rbDiag->GetDynamicFriction() << " Static Friction: " << rbDiag->GetStaticFriction() << std::endl;  
 	}
 
 	void Scene::Init()
@@ -461,21 +413,22 @@ namespace Luna
 
 	void Scene::Clear()
 	{
-		int i = 3;
+		size_t i = 3; 
 		while (bodies.size() > i)
 		{
 			delete bodies[i];
 			bodies.erase(bodies.begin() + i); 
+		}
+		 
+		while (contacts.size() > 0)  
+		{
+			contacts.erase(contacts.begin() + 0);
 		}
 	}
 
 	void Scene::AddMaterialObject(const std::string& name, real restitution, real dynamicFriction, real staticFriction)
 	{
 		Material* material = new Material(name, restitution, dynamicFriction, staticFriction); 
-		//material.name = name; 
-		//material.restitution = restitution; 
-		//material.dynamicFriction = dynamicFriction; 
-		//material.staticFriction = staticFriction; 
 		objectMaterials.push_back(material);   
 		materialCountObject = objectMaterials.size(); 
 	}
@@ -483,12 +436,332 @@ namespace Luna
 	void Scene::AddMaterialSurface(const std::string& name, real restitution, real dynamicFriction, real staticFriction)
 	{
 		Material* material = new Material(name, restitution, dynamicFriction, staticFriction);
-		//material.name = name; 
-		//material.restitution = restitution; 
-		//material.dynamicFriction = dynamicFriction; 
-		//material.staticFriction = staticFriction; 
 		surfaceMaterials.push_back(material);   
 		materialCountSurface = surfaceMaterials.size();
 	}
 
+
+	// Mouse callback function for handling mouse clicks
+	void Scene::mouse(int button, int state, int x, int y)
+	{
+		if (Menu || showLogo) return; // If the menu is open or logo is showing, don't add objects 
+
+		// Convert the screen coordinates to simulation coordinates
+		real x_ = x / 10.0f;
+		real y_ = y / 10.0f;
+
+		if (state == GLUT_DOWN)
+		{
+			switch (button)
+			{
+			case GLUT_LEFT_BUTTON:
+			{
+				// Create and add a random polygon
+				ShapePolygon poly;
+				size_t count = (size_t)Random(3, MaxPolyCount);
+				Vector2* vectors = new Vector2[count];
+				real radius = Random(5, 10);
+				for (size_t i = 0; i < count; i++)
+					vectors[i].Set(Random(-radius, radius), Random(-radius, radius));
+				poly.Set(vectors, count);
+				RigidBody* rb = Add(&poly, (size_t)x_, (size_t)y_, selectedMaterialIndexObject);
+				rb->SetOrient(Random(-PI, PI));
+				std::cout << "Poly: Restitution: "
+					<< rb->GetRestitution() << " Dynamic Friction: "
+					<< rb->GetDynamicFriction() << " Static Friction: "
+					<< rb->GetStaticFriction() << std::endl;
+				delete[] vectors;
+			}
+			break;
+			case GLUT_RIGHT_BUTTON:
+			{
+				// Create and add a random circle
+				ShapeCircle circle(Random(1.0f, 5.0f));
+				RigidBody* rb = Add(&circle, (size_t)x_, (size_t)y_, selectedMaterialIndexObject);
+				std::cout << "Circle: Restitution: "
+					<< rb->GetRestitution() << " Dynamic Friction: "
+					<< rb->GetDynamicFriction() << " Static Friction: "
+					<< rb->GetStaticFriction() << std::endl;
+			}
+			break;
+			}
+		}
+	}
+
+	void Scene::LunaLoop()
+	{
+		// Set up the OpenGL clear color and clear the screen and depth buffer
+		glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Set up the orthogonal projection
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		gluOrtho2D(0, 80, 60, 0);
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		// Render instructional text on the screen
+		StrOnScene(1, 2, "Press 'Esc' to exit");
+		StrOnScene(1, 4, "Left click add a polygon");
+		StrOnScene(1, 6, "Right click add a circle");
+		StrOnScene(1, 8, "Press 'M' to open menu");
+		StrOnScene(1, 10, "Press 'S' to start/stop the simulation, 'F' to frame by frame");
+		StrOnScene(1, 12, "Press 'C' to clear the scene");
+
+		static real accumulator = 0.0f;
+
+		accumulator += clock_time.Elapsed(); // Get the elapsed time since the last frame
+
+		clock_time.Start(); // Restart the clock 
+
+		// acmulator is the time that has passed since the last frame
+		accumulator = Clamp(accumulator, 0.0f, 0.1f); // Clamp the accumulator to prevent spiral of death
+
+		// If the accumulator is greater than the time step, step the scene
+		while (accumulator >= deltaTime) 
+		{
+			if (!frameStep)
+				Step();  
+			else
+				if (step)
+				{
+					Step(); 
+					step = false;
+				}
+
+			accumulator -= deltaTime;
+		}
+
+		clock_time.Stop(); // Stop the clock
+
+		Render(); // Render the scene 
+
+		if (!ChangeSurface)
+			DrawMenu(Menu, custom, ChangeSurface, selectedMaterialIndexObject, &restitution, &dynamicFriction, &staticFriction);
+		else
+			DrawMenu(Menu, custom, ChangeSurface, selectedMaterialIndexSurface, &restitution, &dynamicFriction, &staticFriction);
+
+		glutSwapBuffers(); // Swap the buffers
+	}
+
+	// Main loop for the program
+	void Scene::mainLoop()
+	{
+		// Clear the screen and depth buffer
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		if (showLogo)
+			/*scene.*/DisplayLogo(); // Display the logo 
+		else
+			LunaLoop(); // Display the simulation
+	}
+
+	void Scene::keyboardArrowKeys(int key, int x, int y)
+	{
+		if (Menu)
+		{
+			switch (key)
+			{
+			case GLUT_KEY_RIGHT:
+			{
+				if (!ChangeSurface)
+				{
+					if (!custom && !ChangeSurface)
+						selectedMaterialIndexObject = (selectedMaterialIndexObject + 1) % GetmaterialCountObject();
+				}
+				else
+				{
+					custom = false;
+					selectedMaterialIndexSurface = (selectedMaterialIndexSurface + 1) % GetmaterialCountSurface();
+				}
+			}
+			break;
+			case GLUT_KEY_LEFT:
+			{
+				if (!custom && !ChangeSurface)
+				{
+					selectedMaterialIndexObject = (selectedMaterialIndexObject - 1) % GetmaterialCountObject();
+					if (selectedMaterialIndexObject < 0)
+						selectedMaterialIndexObject = GetmaterialCountObject() - 1;
+				}
+				else if (ChangeSurface)
+				{
+					custom = false;
+					selectedMaterialIndexSurface = (selectedMaterialIndexSurface - 1) % GetmaterialCountSurface();
+					if (selectedMaterialIndexSurface < 0)
+						selectedMaterialIndexSurface = GetmaterialCountSurface() - 1;
+				}
+				break;
+			}
+			}
+		}
+	}
+
+	// Keyboard callback function for menu interactions
+	void Scene::KeyboardMenu(unsigned char key, int x, int y)
+	{
+		switch (key)
+		{
+		case 'r':
+		case 'R':// change restitution
+		{
+			if (custom && !ChangeSurface)
+			{
+				restitution += 0.05f;
+				if (restitution > 1.01f)
+					restitution = 0.05f;
+			}
+		}
+		break;
+		case 'd':
+		case 'D': // change dynamic friction
+		{
+			if (custom && !ChangeSurface)
+			{
+				dynamicFriction += 0.05f;
+				if (dynamicFriction > 1.01f)
+					dynamicFriction = 0.05f;
+			}
+		}
+		break;
+		case 'u':
+		case 'U': // toggle between object and surface material
+		{
+			ChangeSurface = !ChangeSurface;
+		}
+		break;
+		case 's':
+		case 'S': // change static friction
+		{
+			if (custom && !ChangeSurface)
+			{
+				staticFriction += 0.05f;
+				if (staticFriction > 1.01f)
+					staticFriction = 0.05f;
+			}
+		}
+		break;
+		case 'c':
+		case 'C': // reset values to default
+		{
+			if (!ChangeSurface)
+			{
+				restitution = 0.2f;
+				dynamicFriction = 0.3f;
+				staticFriction = 0.5f;
+				selectedMaterialIndexObject = 0;
+			}
+			else
+			{
+				selectedMaterialIndexSurface = 0;
+			}
+		}
+		break;
+		case 't':
+		case 'T': // toggle custom values
+		{
+			if (!ChangeSurface)
+				custom = !custom;
+		}
+		break;
+		//case 'n':
+		//case 'N': // Select next material
+		//{
+		//	if (!ChangeSurface)
+		//	{
+		//		if (!custom && !ChangeSurface)
+		//			selectedMaterialIndexObject = (selectedMaterialIndexObject + 1) % GetmaterialCountObject();
+		//	}
+		//	else
+		//	{
+		//		custom = false;
+		//		selectedMaterialIndexSurface = (selectedMaterialIndexSurface + 1) % GetmaterialCountSurface();
+		//	}
+		//}
+		//break;
+		//case 'p':
+		//case 'P': // Select previous material
+		//{
+		//	if (!custom && !ChangeSurface)
+		//	{
+		//		selectedMaterialIndexObject = (selectedMaterialIndexObject - 1) % GetmaterialCountObject();
+		//		if (selectedMaterialIndexObject < 0)
+		//			selectedMaterialIndexObject = GetmaterialCountObject() - 1;
+		//	}
+		//	else if (ChangeSurface)
+		//	{
+		//		custom = false;
+		//		selectedMaterialIndexSurface = (selectedMaterialIndexSurface - 1) % GetmaterialCountSurface();
+		//		if (selectedMaterialIndexSurface < 0)
+		//			selectedMaterialIndexSurface = GetmaterialCountSurface() - 1;
+		//	}
+		//}
+		break;
+		case 'm':
+		case 'M': // Close the menu
+		{
+			Menu = false;
+			if (!Menu)
+				frameStep = false;
+		}
+		default:
+		{
+			if (key != 'm' && key != 'M')
+				std::cout << "Wrong key pressed..." << std::endl;
+		}
+		break;
+		}
+	}
+
+	// General keyboard callback function 
+	void Scene::keyboard(unsigned char key, int x, int y)
+	{
+		if (Menu)
+			KeyboardMenu(key, x, y);
+		else
+		{
+			switch (key)
+			{
+			case ESC: // Exit the program
+				exit(0);
+				break;
+			case 'm':
+			case 'M': // Open/Close the menu
+				if (!showLogo)
+				{
+					Menu = true;
+					frameStep = true;
+				}
+				break;
+			case 'c':
+			case 'C': // Clear the scene
+				if (!showLogo)
+					Clear();
+				break;
+			//case ' ': // Enter Simulation from Intro Logo Screen
+			//	if (showLogo)
+			//	{
+			//		showLogo = false;
+			//		glutDisplayFunc(LunaLoop);
+			//		glutPostRedisplay();
+			//	}
+			//	break;
+			case 's':
+			case 'S': // Start/Stop the simulation
+				if (!showLogo)
+					frameStep = frameStep ? false : true;
+				break;
+			case 'f':
+			case 'F': // Step through the simulation frame by frame
+				if (!showLogo)
+					step = true;
+				break;
+			default:
+				std::cout << "Wrong key pressed..." << std::endl;
+				break;
+			}
+		}
+	}
 }

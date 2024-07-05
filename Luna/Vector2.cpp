@@ -108,30 +108,6 @@ namespace Luna
 		return Vector2(this->x /= scalar, this->y /= scalar);
 	}
 
-	//// operator== overloading for comparing vector
-	//bool Vector2::operator==(const Vector2& oVec) const
-	//{
-	//	return (this->x == otherVec.x && this->y == otherVec.y);
-	//}
-
-	//// operator!= overloading for comparing vector
-	//bool Vector2::operator!=(const Vector2& oVec) const
-	//{
-	//	return (this->x != otherVec.x || this->y != otherVec.y);
-	//}
-
-	//// operator= overloading for assigning vector
-	//Vector2 Vector2::operator=(const Vector2& oVec)
-	//{
-	//	if (this != &otherVec)
-	//	{
-	//		this->x = otherVec.x;
-	//		this->y = otherVec.y;
-	//	}
-	//	return *this;
-	//}
-
-
 	// Maximum value between two vectors 
 	Vector2 Max(const Vector2& v, const Vector2& oVec)
 	{

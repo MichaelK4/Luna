@@ -7,32 +7,31 @@ namespace Luna
 	class Mat2
 	{
 	public:
-		union
+		union // 2x2 matrix
 		{
 			struct
 			{
 				real m00, m01;
-				real m10, m11;
+				real m10, m11; 
 			};
-			real m[2][2];
-			real v[4];
+			real m[2][2]; // 2x2 matrix
+			real v[4]; // 1D array
 		};
 
-		Mat2();
-		Mat2(real radians);
-		Mat2(real a, real b, real c, real d);
-		~Mat2();
+		Mat2(); // identity matrix
+		Mat2(real radians); // rotation matrix
+		Mat2(real a, real b, real c, real d); // 2x2 matrix
+		~Mat2(); // destructor
 
-		void Set(real radians);
-		Mat2 Abs() const;
-		Vector2 AxisX() const;
-		Vector2 AxisY() const;
-		Mat2 Transpose() const;
+		void Set(real radians); // set rotation matrix
+		Mat2 Abs() const; // absolute matrix
+		Vector2 AxisX() const; // x-axis
+		Vector2 AxisY() const; // y-axis
+		Mat2 Transpose() const; // transpose matrix
 
-		const Vector2 operator*(const Vector2& v) const;
-		const Mat2 operator*(const Mat2& v) const;
+		const Vector2 operator*(const Vector2& v) const; // matrix-vector multiplication
+		const Mat2 operator*(const Mat2& v) const; // matrix-matrix multiplication
 	};
 }
 
 #endif // !MAT2_H
-

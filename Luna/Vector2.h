@@ -5,21 +5,23 @@
 #include <algorithm>
 #include <functional> // for std::hash
 
-typedef float real; // Real is a floating point number that represents a real number.
-//typedef unsigned int uint; // Unsigned int is a data type that represents an integer that is always positive.
-typedef size_t uint; // Size_t is a data type that represents the size of an object in bytes.
-typedef unsigned char byte; // Unsigned char is a data type that represents a character that is always positive.
-
-/*Pi is a mathematical constant that represents
-the ratio of a circle's circumference to its diameter.*/
-const real PI = 3.14159265358979323846f;
-// Epsilon is a small number that is used to compare floating point numbers.
-const real EPSILON = 0.0001f;
-// Real gravity is the force that attracts a body toward the center of the earth.
-const real REAL_GRAVITY = 9.8f;
-
 namespace Luna
 {
+	typedef float real; // Real is a floating point number that represents a real number.
+	
+	//typedef unsigned int uint; // Unsigned int is a data type that represents an integer that is always positive.
+	
+	typedef unsigned char byte; // Unsigned char is a data type that represents a character that is always positive.
+
+	/*Pi is a mathematical constant that represents
+	the ratio of a circle's circumference to its diameter.*/
+	const real PI = 3.14159265358979323846f;
+	// Epsilon is a small number that is used to compare floating point numbers.
+	const real EPSILON = 0.0001f;
+	// Real gravity is the force that attracts a body toward the center of the earth.
+	const real REAL_GRAVITY = 9.8f;
+
+
 	class Vector2
 	{
 	public:
@@ -83,26 +85,6 @@ namespace Luna
 
 		// operator/= overloading for dividing vector with scalar
 		Vector2 operator/=(const real& scalar);
-
-		//// operator== overloading for comparing vector
-		//bool operator==(const Vector2& oVec) const;
-
-		//// operator!= overloading for comparing vector
-		//bool operator!=(const Vector2& oVec) const;
-
-		//// operator= overloading for assigning vector
-		//Vector2 operator=(const Vector2& oVec);
-
-		/* Jenkins one - at - a - time hash function algorithm
-		for hashing the vector values to a unique hash code value
-		https://en.wikipedia.org/wiki/Jenkins_hash_function */
-		std::size_t hash_code() const
-		{
-			std::hash<real> hasher;
-			std::size_t hashX = hasher(x);
-			std::size_t hashY = hasher(y);
-			return hashX ^ (hashY + 0x9e3779b9 + (hashX << 6) + (hashX >> 2));
-		}
 	};
 
 	// Maximum value between two vectors 
@@ -168,10 +150,8 @@ namespace Luna
 // Delta time is the amount of time that has passed since the last frame.
 const float deltaTime = 1.0f / 60.0f;
 // Gravity scale is a value that is used to scale the force of gravity.
-const real GRAVITY_S = 5.0f;
+const Luna::real GRAVITY_S = 5.0f; 
 // Gravity is a vector that represents the force of gravity.
 const Luna::Vector2 GRAVITY(0.0f, 9.8f * GRAVITY_S);
 
 #endif // !VECTOR2_H
-
-

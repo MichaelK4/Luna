@@ -4,40 +4,53 @@ namespace Luna
 {
 	Clock::Clock()
 	{
-		SetThreadAffinityMask(GetCurrentThread(), 1); // Set the affinity mask to the first core
-		QueryPerformanceFrequency(&m_freq); // Get the frequency of the performance counter
+		// set the thread affinity mask to the first core for consistent timing
+		SetThreadAffinityMask(GetCurrentThread(), 1);
+		
+		// Get the frequency of the high-performance counter
+		QueryPerformanceFrequency(&m_freq);
 
-		Start(); // Start the clock
-		Stop(); // Stop the clock
+		// Initialize the clock
+		Start();
+		Stop();
 	}
 
-	Clock::~Clock() { }
+	Clock::~Clock() 
+	{ 
+		// No specific cleanup needed 
+	}
 
 	void Clock::Start()
 	{
-		QueryPerformanceCounter(&m_start); // Get the current time
+		// Record the start time
+		QueryPerformanceCounter(&m_start);
 	}
 
 	void Clock::Stop()
 	{
+		// Record the stop time
 		QueryPerformanceCounter(&m_stop); // Get the current time
 	}
 
 	float Clock::Elapsed()
 	{
-		QueryPerformanceCounter(&m_current); // Get the current time
+		// Get current time
+		QueryPerformanceCounter(&m_current);
 
-		return static_cast<real>(m_current.QuadPart - m_start.QuadPart) / static_cast<real>(m_freq.QuadPart); // Return the elapsed time
+		// Calculate and return the elapsed time in seconds
+		return static_cast<float>(m_current.QuadPart - m_start.QuadPart) / static_cast<float>(m_freq.QuadPart); 
 	}
 
 	float Clock::Difference()
 	{
-		return (m_stop.QuadPart - m_start.QuadPart) / (real)m_freq.QuadPart; // Return the difference between the start and stop times
+		// Calculate and return the difference between the start and stop in seconds
+		return (m_stop.QuadPart - m_start.QuadPart) / (float)m_freq.QuadPart; 
 	}
 
 	long long Clock::Current()
 	{
-		QueryPerformanceCounter(&m_current); // Get the current time
-		return m_current.QuadPart; // Return the current time
+		// Get the current time
+		QueryPerformanceCounter(&m_current);
+		return m_current.QuadPart; 
 	}
 }

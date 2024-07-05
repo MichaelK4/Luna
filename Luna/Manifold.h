@@ -7,26 +7,26 @@ namespace Luna
 	class Manifold // Manifold is a class that holds the information of the collision between two bodies
 	{
 	public:
-		RigidBody* A;
-		RigidBody* B;
-		real penetration;
-		Vector2 normal;
-		Vector2 contacts[2]; 
-		size_t contactCount;
+		RigidBody* A; // The two bodies that are colliding
+		RigidBody* B; // The two bodies that are colliding
+		real penetration; // The penetration depth of the collision
+		Vector2 normal; // The normal of the collision
+		Vector2 contacts[2];  // The contact points of the collision
+		size_t contactCount; // The number of contact points
 
-		real e;
-		real dynamicFriction;;
-		real staticFriction;
+		real e; // The restitution of the collision
+		real dynamicFriction;; // The dynamic friction of the collision
+		real staticFriction; // The static friction of the collision
 
-		Manifold();
-		Manifold(RigidBody* a, RigidBody* b);
-		~Manifold();
+		Manifold(); // Default constructor
+		Manifold(RigidBody* a, RigidBody* b); // Constructor that takes in two bodies
+		~Manifold(); // Destructor
 
-		void Solve();
-		void Init();
-		void ApplyImpulse();
-		void PositionalCorrection();
-		void InfiniteMassCorrection();
+		void Solve(); // Solve the collision
+		void Init(); // Initialize the collision
+		void ApplyImpulse(); // Apply the impulse to the bodies
+		void PositionalCorrection(); // Correct the position of the bodies
+		void InfiniteMassCorrection(); // Correct the position of the bodies if one of them has infinite mass
 	};
 }
 
