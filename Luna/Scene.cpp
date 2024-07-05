@@ -28,8 +28,7 @@ namespace Luna
 	void Scene::AddMaterials() 
 	{
 		// object materials
-		AddMaterialObject("Default - Like Leather/Soft Plastic", 0.2f, 0.3f, 0.5f); // default 0.2 0.3 0.5 is like leather or soft plastic 
-		AddMaterialObject("Steel", 0.7f, 0.3f, 0.4f); // steel
+		AddMaterialObject("Default - Steel", 0.7f, 0.3f, 0.4f); // steel
 		AddMaterialObject("Rubber", 0.85f, 0.8f, 0.9f); // rubber   
 		AddMaterialObject("Glass", 0.95f, 0.15f, 0.2f); // glass  
 		AddMaterialObject("Plastic", 0.7f, 0.3f, 0.35f); // plastic  
@@ -198,100 +197,107 @@ namespace Luna
 		return rb;
 	}
 
-	void Scene::StrOnScene(int x, int y, const char* s)
+	void Scene::StrOnScene(int x, int y, const char* s, bool isSim) 
 	{
-		glColor3f(0.5f, 0.5f, 0.9f);
+		//glColor3f(0.5f, 0.5f, 0.9f);
+		if(!isSim) 	
+			glColor3f(1.0f, 1.0f, 1.0f);
+		else
+			glColor3f(0.0f, 0.0f, 0.0f); 
 		glRasterPos2i(x, y);
 		size_t l = (size_t)std::strlen(s);
 		for (size_t i = 0; i < l; ++i)
-			glutBitmapCharacter(GLUT_BITMAP_9_BY_15, *(s + i));
+			glutBitmapCharacter(GLUT_BITMAP_9_BY_15, *(s + i)); 
 	}
 
-	void Scene::DrawMenu(bool menu, bool custom, bool surface, size_t selectedMaterialIndex, real* restitution, real* dynamicFriction, real* staticFriction)
+	void Scene::DrawMenu(/*bool menu, bool custom, bool surface, size_t selectedMaterialIndex,*/ real* restitution, real* dynamicFriction, real* staticFriction)
 	{
-		if (!menu) return;
+		if (!Menu) return;
 
-		glColor3f(0.2f, 0.2f, 0.2f);
-		glRectf(10, 3, 70, 50);
+		glColor4f(0.1f, 0.1f, 0.1f, 0.8f);
+		glRectf(8, 3, 73, 50);
 
 		glColor3f(1.0f, 1.0f, 1.0f);
-		StrOnScene(33, 6, "Settings Menu");
-		StrOnScene(12, 8, "Press 'M' to close menu");
-		StrOnScene(12, 10, "Press 'C' to go to deufault settings, Press 'U' to change surface"); 
-		if (!surface) 
+		StrOnScene(33, 6, "Settings Menu", false);
+		StrOnScene(12, 8, "Press 'M' to close menu", false);
+		StrOnScene(12, 10, "Press 'C' to go to deufault settings", false);
+		StrOnScene(12, 12, "Press 'U' to change surface/object settings", false);
+		if (!ChangeSurface) 
 		{
 			if (custom)
 			{
-				StrOnScene(12, 12, "[Custom]");
-				StrOnScene(12, 14, "Press 'T' to switch to Predefined");
-				StrOnScene(12, 35, "R: Restitution");
-				StrOnScene(12, 40, "D: Dynamic Friction");
-				StrOnScene(12, 45, "S: Static Friction");
+				StrOnScene(30, 16, "[Object - Custom]", false);
+				StrOnScene(25, 18, "Press 'T' to switch to Predefined", false);
+				StrOnScene(23, 20, "Press R, D or S to change value", false);
+				StrOnScene(12, 35, "R: Restitution", false);
+				StrOnScene(12, 40, "D: Dynamic Friction", false);
+				StrOnScene(12, 45, "S: Static Friction", false);
 
 				char buffer[50];
 				sprintf_s(buffer, "Restitution: %.2f", *restitution);
-				StrOnScene(40, 35, buffer);
+				StrOnScene(40, 35, buffer, false);
 				sprintf_s(buffer, "Dyn. Friction: %.2f", *dynamicFriction);
-				StrOnScene(40, 40, buffer);
+				StrOnScene(40, 40, buffer, false);
 				sprintf_s(buffer, "Stat. Friction: %.2f", *staticFriction);
-				StrOnScene(40, 45, buffer);
+				StrOnScene(40, 45, buffer, false);
 			}
 			else
 			{
-				StrOnScene(12, 12, "[Predefined]");
-				StrOnScene(12, 14, "Press 'T' to switch to Custom");
-				StrOnScene(12, 16, "Press 'N' for next and 'P' to go back");
+				StrOnScene(30, 16, "[Object - Predefined]", false);
+				StrOnScene(23, 18, "Arrows right/left to change material", false);
+				StrOnScene(25, 20, "Press 'T' to switch to Custom", false);
 				glColor3f(1.0f, 1.0f, 1.0f);
-				StrOnScene(15, 20, "<- ");
+				StrOnScene(30, 22, "<- ", false);
 				for (int i = 0; i < materialCountObject; i++)
 				{
-					if (i == selectedMaterialIndex)
+					if (i == selectedMaterialIndexObject)
 					{
 						glColor3f(0.0f, 1.0f, 0.0f);
-						StrOnScene(18, 20, objectMaterials[i]->getName().c_str());    
-						StrOnScene(18 + objectMaterials[i]->getName().size(), 20, " ->"); 
+						StrOnScene(33, 22, objectMaterials[i]->getName().c_str(), false);
+						StrOnScene(33 + objectMaterials[i]->getName().size(), 22, " ->", false);
 					}
 				}
 
-				const Material* selectedMaterial = objectMaterials[selectedMaterialIndex]; 
+				const Material* selectedMaterial = objectMaterials[selectedMaterialIndexObject]; 
 				char buffer[50];
 				sprintf_s(buffer, "Restitution: %.2f", selectedMaterial->getRestitution());
 				*restitution = selectedMaterial->getRestitution();  
-				StrOnScene(12, 35, buffer);
+				StrOnScene(12, 35, buffer, false);
 				sprintf_s(buffer, "Dynamic Friction: %.2f", selectedMaterial->getDynamicFriction());
 				*dynamicFriction = selectedMaterial->getDynamicFriction(); 
-				StrOnScene(12, 40, buffer);
+				StrOnScene(12, 40, buffer, false);
 				sprintf_s(buffer, "Static Friction: %.2f", selectedMaterial->getStaticFriction());
 				*staticFriction = selectedMaterial->getStaticFriction();  
-				StrOnScene(12, 45, buffer);
+				StrOnScene(12, 45, buffer, false);
 			}
 		}
 		else
 		{
-				StrOnScene(12, 12, "Press 'N' for next and 'P' to go back"); 
+				StrOnScene(30, 16, "[Surface - Predefined]", false);
+				StrOnScene(23, 18, "Arrows right/left to change material", false);
 				glColor3f(1.0f, 1.0f, 1.0f); 
-				StrOnScene(15, 20, "<- "); 
+				StrOnScene(30, 20, "<- ", false);
 				for (int i = 0; i < materialCountSurface; i++) 
 				{
-					if (i == selectedMaterialIndex) 
+					if (i == selectedMaterialIndexSurface) 
 					{
 						glColor3f(0.0f, 1.0f, 0.0f); 
-						StrOnScene(18, 20, surfaceMaterials[i]->getName().c_str());  
-						StrOnScene(18 + surfaceMaterials[i]->getName().size(), 20, " ->"); 
+						StrOnScene(33, 20, surfaceMaterials[i]->getName().c_str(), false);
+						StrOnScene(33 + surfaceMaterials[i]->getName().size(), 20, " ->", false);
 					}
 				}
 
-				const Material* selectedMaterial = surfaceMaterials[selectedMaterialIndex]; 
+				const Material* selectedMaterial = surfaceMaterials[selectedMaterialIndexSurface];  
 				char buffer[50];
 				sprintf_s(buffer, "Restitution: %.2f", selectedMaterial->getRestitution());
 				surfaceRB->SetRestitution(selectedMaterial->getRestitution()); 
-				StrOnScene(12, 35, buffer);
+				StrOnScene(12, 35, buffer, false);
 				sprintf_s(buffer, "Dynamic Friction: %.2f", selectedMaterial->getDynamicFriction());
 				surfaceRB->SetDynamicFriction(selectedMaterial->getDynamicFriction());
-				StrOnScene(12, 40, buffer);
+				StrOnScene(12, 40, buffer, false);
 				sprintf_s(buffer, "Static Friction: %.2f", selectedMaterial->getStaticFriction());
 				surfaceRB->SetStaticFriction(selectedMaterial->getStaticFriction());
-				StrOnScene(12, 45, buffer);
+				StrOnScene(12, 45, buffer, false);
 		}
 	}
 
@@ -503,12 +509,12 @@ namespace Luna
 		glLoadIdentity();
 
 		// Render instructional text on the screen
-		StrOnScene(1, 2, "Press 'Esc' to exit");
-		StrOnScene(1, 4, "Left click add a polygon");
-		StrOnScene(1, 6, "Right click add a circle");
-		StrOnScene(1, 8, "Press 'M' to open menu");
-		StrOnScene(1, 10, "Press 'S' to start/stop the simulation, 'F' to frame by frame");
-		StrOnScene(1, 12, "Press 'C' to clear the scene");
+		StrOnScene(1, 2, "Press 'Esc' to exit", true);
+		StrOnScene(1, 4, "Left click add a polygon",true);
+		StrOnScene(1, 6, "Right click add a circle",true);
+		StrOnScene(1, 8, "Press 'M' to open menu",true);
+		StrOnScene(1, 10, "Press 'S' to start/stop the simulation, 'F' to frame by frame", true);
+		StrOnScene(1, 12, "Press 'C' to clear the scene",true);
 
 		static real accumulator = 0.0f;
 
@@ -539,9 +545,9 @@ namespace Luna
 		Render(); // Render the scene 
 
 		if (!ChangeSurface)
-			DrawMenu(Menu, custom, ChangeSurface, selectedMaterialIndexObject, &restitution, &dynamicFriction, &staticFriction);
+			DrawMenu(/*Menu, custom, ChangeSurface, selectedMaterialIndexObject,*/ &restitution, &dynamicFriction, &staticFriction);
 		else
-			DrawMenu(Menu, custom, ChangeSurface, selectedMaterialIndexSurface, &restitution, &dynamicFriction, &staticFriction);
+			DrawMenu(/*Menu, custom, ChangeSurface, selectedMaterialIndexSurface,*/ &restitution, &dynamicFriction, &staticFriction);
 
 		glutSwapBuffers(); // Swap the buffers
 	}
@@ -553,7 +559,7 @@ namespace Luna
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		if (showLogo)
-			/*scene.*/DisplayLogo(); // Display the logo 
+			DisplayLogo(); // Display the logo  
 		else
 			LunaLoop(); // Display the simulation
 	}
@@ -564,37 +570,43 @@ namespace Luna
 		{
 			switch (key)
 			{
-			case GLUT_KEY_RIGHT:
-			{
-				if (!ChangeSurface)
+				case GLUT_KEY_RIGHT:
+				{
+					if (!ChangeSurface)
+					{
+						if (!custom && !ChangeSurface)
+						{
+							selectedMaterialIndexObject++;
+							if (selectedMaterialIndexObject == GetmaterialCountObject())
+								selectedMaterialIndexObject = 0;
+						}
+					}
+					else
+					{
+						custom = false;
+						selectedMaterialIndexSurface++;
+						if (selectedMaterialIndexSurface == GetmaterialCountSurface())
+							selectedMaterialIndexSurface = 0;
+					}
+				}
+					break;
+				case GLUT_KEY_LEFT:
 				{
 					if (!custom && !ChangeSurface)
-						selectedMaterialIndexObject = (selectedMaterialIndexObject + 1) % GetmaterialCountObject();
+					{
+						selectedMaterialIndexObject--;
+						if (selectedMaterialIndexObject < 0)
+							selectedMaterialIndexObject = GetmaterialCountObject() - 1;
+					}
+					else if (ChangeSurface)
+					{
+						custom = false;
+						selectedMaterialIndexSurface--;
+						if (selectedMaterialIndexSurface < 0)
+							selectedMaterialIndexSurface = GetmaterialCountSurface() - 1;
+					}
+						break;
 				}
-				else
-				{
-					custom = false;
-					selectedMaterialIndexSurface = (selectedMaterialIndexSurface + 1) % GetmaterialCountSurface();
-				}
-			}
-			break;
-			case GLUT_KEY_LEFT:
-			{
-				if (!custom && !ChangeSurface)
-				{
-					selectedMaterialIndexObject = (selectedMaterialIndexObject - 1) % GetmaterialCountObject();
-					if (selectedMaterialIndexObject < 0)
-						selectedMaterialIndexObject = GetmaterialCountObject() - 1;
-				}
-				else if (ChangeSurface)
-				{
-					custom = false;
-					selectedMaterialIndexSurface = (selectedMaterialIndexSurface - 1) % GetmaterialCountSurface();
-					if (selectedMaterialIndexSurface < 0)
-						selectedMaterialIndexSurface = GetmaterialCountSurface() - 1;
-				}
-				break;
-			}
 			}
 		}
 	}
@@ -604,114 +616,81 @@ namespace Luna
 	{
 		switch (key)
 		{
-		case 'r':
-		case 'R':// change restitution
-		{
-			if (custom && !ChangeSurface)
+			case 'r':
+			case 'R':// change restitution
 			{
-				restitution += 0.05f;
-				if (restitution > 1.01f)
-					restitution = 0.05f;
+				if (custom && !ChangeSurface)
+				{
+					restitution += 0.05f;
+					if (restitution > 1.01f)
+						restitution = 0.05f;
+				}
 			}
-		}
-		break;
-		case 'd':
-		case 'D': // change dynamic friction
-		{
-			if (custom && !ChangeSurface)
+				break;
+			case 'd':
+			case 'D': // change dynamic friction
 			{
-				dynamicFriction += 0.05f;
-				if (dynamicFriction > 1.01f)
-					dynamicFriction = 0.05f;
+				if (custom && !ChangeSurface)
+				{
+					dynamicFriction += 0.05f;
+					if (dynamicFriction > 1.01f)
+						dynamicFriction = 0.05f;
+				}
 			}
-		}
-		break;
-		case 'u':
-		case 'U': // toggle between object and surface material
-		{
-			ChangeSurface = !ChangeSurface;
-		}
-		break;
-		case 's':
-		case 'S': // change static friction
-		{
-			if (custom && !ChangeSurface)
+				break;
+			case 'u':
+			case 'U': // toggle between object and surface material
 			{
-				staticFriction += 0.05f;
-				if (staticFriction > 1.01f)
-					staticFriction = 0.05f;
+				ChangeSurface = !ChangeSurface;
 			}
-		}
-		break;
-		case 'c':
-		case 'C': // reset values to default
-		{
-			if (!ChangeSurface)
+				break;
+			case 's':
+			case 'S': // change static friction
 			{
-				restitution = 0.2f;
-				dynamicFriction = 0.3f;
-				staticFriction = 0.5f;
-				selectedMaterialIndexObject = 0;
+				if (custom && !ChangeSurface)
+				{
+					staticFriction += 0.05f;
+					if (staticFriction > 1.01f)
+						staticFriction = 0.05f;
+				}
 			}
-			else
+				break;
+			case 'c':
+			case 'C': // reset values to default
 			{
-				selectedMaterialIndexSurface = 0;
+				if (!ChangeSurface)
+				{
+					restitution = 0.2f;
+					dynamicFriction = 0.3f;
+					staticFriction = 0.5f;
+					selectedMaterialIndexObject = 0;
+				}
+				else
+				{
+					selectedMaterialIndexSurface = 0;
+				}
 			}
-		}
-		break;
-		case 't':
-		case 'T': // toggle custom values
-		{
-			if (!ChangeSurface)
-				custom = !custom;
-		}
-		break;
-		//case 'n':
-		//case 'N': // Select next material
-		//{
-		//	if (!ChangeSurface)
-		//	{
-		//		if (!custom && !ChangeSurface)
-		//			selectedMaterialIndexObject = (selectedMaterialIndexObject + 1) % GetmaterialCountObject();
-		//	}
-		//	else
-		//	{
-		//		custom = false;
-		//		selectedMaterialIndexSurface = (selectedMaterialIndexSurface + 1) % GetmaterialCountSurface();
-		//	}
-		//}
-		//break;
-		//case 'p':
-		//case 'P': // Select previous material
-		//{
-		//	if (!custom && !ChangeSurface)
-		//	{
-		//		selectedMaterialIndexObject = (selectedMaterialIndexObject - 1) % GetmaterialCountObject();
-		//		if (selectedMaterialIndexObject < 0)
-		//			selectedMaterialIndexObject = GetmaterialCountObject() - 1;
-		//	}
-		//	else if (ChangeSurface)
-		//	{
-		//		custom = false;
-		//		selectedMaterialIndexSurface = (selectedMaterialIndexSurface - 1) % GetmaterialCountSurface();
-		//		if (selectedMaterialIndexSurface < 0)
-		//			selectedMaterialIndexSurface = GetmaterialCountSurface() - 1;
-		//	}
-		//}
-		break;
-		case 'm':
-		case 'M': // Close the menu
-		{
-			Menu = false;
-			if (!Menu)
-				frameStep = false;
-		}
-		default:
-		{
-			if (key != 'm' && key != 'M')
-				std::cout << "Wrong key pressed..." << std::endl;
-		}
-		break;
+				break;
+			case 't':
+			case 'T': // toggle custom values
+			{
+				if (!ChangeSurface)
+					custom = !custom;
+			}
+				break;
+			case 'm':
+			case 'M': // Close the menu
+			{
+				Menu = false;
+				if (!Menu)
+					frameStep = false;
+			}
+			default:
+			{
+				if (key != 'm' && key != 'M')
+					std::cout << "Wrong key pressed..." << std::endl;
+			}
+				break;
 		}
 	}
 
@@ -724,43 +703,47 @@ namespace Luna
 		{
 			switch (key)
 			{
-			case ESC: // Exit the program
-				exit(0);
-				break;
-			case 'm':
-			case 'M': // Open/Close the menu
-				if (!showLogo)
+				case ESC: // Exit the program
 				{
-					Menu = true;
-					frameStep = true;
+					exit(0);
 				}
-				break;
-			case 'c':
-			case 'C': // Clear the scene
-				if (!showLogo)
-					Clear();
-				break;
-			//case ' ': // Enter Simulation from Intro Logo Screen
-			//	if (showLogo)
-			//	{
-			//		showLogo = false;
-			//		glutDisplayFunc(LunaLoop);
-			//		glutPostRedisplay();
-			//	}
-			//	break;
-			case 's':
-			case 'S': // Start/Stop the simulation
-				if (!showLogo)
-					frameStep = frameStep ? false : true;
-				break;
-			case 'f':
-			case 'F': // Step through the simulation frame by frame
-				if (!showLogo)
-					step = true;
-				break;
-			default:
-				std::cout << "Wrong key pressed..." << std::endl;
-				break;
+					break;
+				case 'm':
+				case 'M': // Open/Close the menu
+				{
+					if (!showLogo)
+					{
+						Menu = true;
+						frameStep = true;
+					}
+				}
+					break;
+				case 'c':
+				case 'C': // Clear the scene
+				{
+					if (!showLogo)
+						Clear();
+				}
+					break;
+				case 's':
+				case 'S': // Start/Stop the simulation
+				{
+					if (!showLogo)
+						frameStep = frameStep ? false : true;
+				}
+					break;
+				case 'f':
+				case 'F': // Step through the simulation frame by frame
+				{	
+					if (!showLogo)
+						step = true;
+				}
+					break;
+				default:
+				{
+					std::cout << "Wrong key pressed..." << std::endl;
+				}
+					break;
 			}
 		}
 	}

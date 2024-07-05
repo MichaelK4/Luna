@@ -27,9 +27,8 @@ namespace Luna
 		bool custom = false; // Use custom values for restitution, dynamic friction, and static friction
 		bool ChangeSurface = false; // Change the surface material instead of the object material
 
-		size_t selectedMaterialIndexObject = 0; // Index for the selected material for the object  
-		size_t selectedMaterialIndexSurface = 0; // Index for the selected material for the surface 
-
+		short selectedMaterialIndexObject = 0; // Index for the selected material for the object
+		short selectedMaterialIndexSurface = 0; // Index for the selected material for the surface
 
 	public:
 		Scene(); //constructor
@@ -51,10 +50,10 @@ namespace Luna
 
 		std::vector<RigidBody*> GetBodies() { return bodies; } //get the list of rigid bodies
 
-		void StrOnScene(int x, int y, const char* s); //draw a string on the scene
-		void DrawMenu(bool menu, bool custom, bool surface, size_t selectedMaterialIndex, real* restitution, real* dynamicFriction, real* staticFriction); //draw the menu 
+		void StrOnScene(int x, int y, const char* s, bool isSim); //draw a string on the scene
+		void DrawMenu(/*bool menu, bool custom, bool surface, size_t selectedMaterialIndex,*/ real* restitution, real* dynamicFriction, real* staticFriction); //draw the menu 
 		void LoadLogoTexture(const char* filename); //load the logo texture 
-		unsigned char* LoadBMP(const char* filename, int& width, int& height); //load a BMP file
+		unsigned char* LoadBMP(const char* filename, int& width, int& height); //load a BMP file 
 		void DisplayLogo(); //display the logo
 
 		GLuint GetLogoTexture() { return logoTexture; } //get the logo texture
@@ -67,12 +66,12 @@ namespace Luna
 		void AddMaterialSurface(const std::string& name, real restitution, real dynamicFriction, real staticFriction); // add a material to the surface
 		void AddMaterials(); // add materials to the scene
 		
-		int GetmaterialCountObject() // get the number of materials for the object
+		short GetmaterialCountObject() // get the number of materials for the object 
 		{
 			return materialCountObject;  
 		}
 
-		int GetmaterialCountSurface()  // get the number of materials for the surface
+		short GetmaterialCountSurface()  // get the number of materials for the surface
 		{
 			return materialCountSurface;  
 		}
