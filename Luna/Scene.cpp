@@ -767,7 +767,7 @@ namespace Luna
 			default:
 			{
 				if ((key != 'm' && key != 'M')) 
-					std::cout << "Wrong key pressed..." << std::endl;
+					std::cout << "Wrong key pressed..." << std::endl << std::endl;
 			}
 			break;
 		}
@@ -838,7 +838,7 @@ namespace Luna
 				default:
 				{
 					if(key != 'f' && key != 'F')
-						std::cout << "Wrong key pressed..." << std::endl;
+						std::cout << "Wrong key pressed..." << std::endl << std::endl;
 				}
 				break;
 			}
