@@ -26,7 +26,6 @@ arrays and other data structures.*/
 #include <cmath> // cmath is a library that provides mathematical functions for floating point numbers.
 #include <cassert> // cassert is a library that provides a macro that can be used to verify assumptions made by the programmer.
 
-
 #undef max // max is a macro that represents the maximum value of a number.
 #undef min // min is a macro that represents the minimum value of a number.
 
