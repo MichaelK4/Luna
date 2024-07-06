@@ -26,6 +26,7 @@ namespace Luna
 		bool Menu = false; // Show the menu
 		bool custom = false; // Use custom values for restitution, dynamic friction, and static friction
 		bool ChangeSurface = false; // Change the surface material instead of the object material
+		bool clickedCustomParameters = false; // Clicked the custom parameters button
 
 		short selectedMaterialIndexObject = 0; // Index for the selected material for the object
 		short selectedMaterialIndexSurface = 0; // Index for the selected material for the surface
@@ -88,16 +89,15 @@ namespace Luna
 
 		// Mouse callback function for handling mouse clicks
 		void mouse(int button, int state, int x, int y);
+		// Luna loop for the program
 		void LunaLoop();
 		// Main loop for the program
 		void mainLoop();
 		void keyboardArrowKeys(int key, int x, int y);
 		// Keyboard callback function for menu interactions
 		void KeyboardMenu(unsigned char key, int x, int y);
-
 		// General keyboard callback function 
 		void keyboard(unsigned char key, int x, int y);
-
 	}; 
 }
 

@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Ensure freeglut.dll in the Debug folder is not ignored
+!Debug/freeglut.dll

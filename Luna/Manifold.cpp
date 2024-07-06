@@ -6,96 +6,108 @@ namespace Luna
 	Manifold::Manifold(RigidBody* a, RigidBody* b) : A(a), B(b) {} 
 	Manifold::~Manifold() {}
 
-	void Manifold::Solve()
-	{
-		Dispatch[A->shape->GetType()][B->shape->GetType()](this, A, B);
-	}
+	// Use a dispatch table to call the appropriate collision detection function
+	// based on the shapes of the two colliding bodies
+	void Manifold::Solve() { Dispatch[A->shape->GetType()][B->shape->GetType()](this, A, B); }
 
 	void Manifold::Init()
 	{
-		// Calculate average restitution
+		// Calculate average restitution (bounciness) of the collision
+		// We use the minimum of the two bodies' restitution values
+		// This ensures a more realistic collision response
 		e = std::min(A->GetRestitution(), B->GetRestitution());
 
-		// Calculate static and dynamic friction
+		// Calculate combined friction coefficients
+		// We use the geometric mean (square root of the product) for both static and dynamic friction
+		// This provides a good approximation of the combined friction effect
 		staticFriction = std::sqrt(A->GetStaticFriction() * A->GetStaticFriction());
 		dynamicFriction = std::sqrt(A->GetDynamicFriction() * A->GetDynamicFriction());
 
 		for (size_t i = 0; i < contactCount; i++)
 		{
-			// Calculate radius from center of mass to contact - is the vector from the center of mass to the contact point
+			// Calculate the vectors from each body's center of mass to the contact point
 			Vector2 radA = contacts[i] - A->position;
 			Vector2 radB = contacts[i] - B->position;
 
 			// Calculate the relative velocity of the bodies at the contact point
-			Vector2 radV = B->velocity + Cross(B->AngularVelocity, radB)
-				- A->velocity - Cross(A->AngularVelocity, radA);
+			// This includes both linear and angular velocities
+			Vector2 radV = B->velocity + Cross(B->AngularVelocity, radB) -
+						   A->velocity - Cross(A->AngularVelocity, radA);
 
-			// Calculate the relative velocity in terms of the normal direction
-			// the normal component of the relative velocity
-			if (radV.LengthSqr() < (GRAVITY * deltaTime).LengthSqr() + EPSILON)
-				e = 0.0f;
+			// Check if the relative velocity is very small (objects are nearly at rest)
+			// If so, set restitution to 0 to prevent "jittering" of resting contact
+			if (radV.LengthSqr() < (GRAVITY * deltaTime).LengthSqr() + EPSILON)   
+				e = 0.0f; // Set restitution to 0 for resting contact
 		}
 	}
 
 	void Manifold::ApplyImpulse()
 	{
-		// Early out and positional correction if both objects have infinite mass
+		// Special case: both objects have infinite mass (immovable)
+		// In this case, we don't apply impulses, but we might need to adjust positions
 		if (Equal(A->InverseMass + B->InverseMass, 0))
 		{
-			InfiniteMassCorrection();
+			InfiniteMassCorrection(); // Adjust positions
 			return;
 		}
 
 		for (size_t i = 0; i < contactCount; i++)
 		{
-			// Calculate radius from center of mass to contact - is the vector from the center of mass to the contact point
+			// Calculate vectors from center of mass to contact point for each body
 			Vector2 radA = contacts[i] - A->position;
 			Vector2 radB = contacts[i] - B->position;
 
-			Vector2 radV = B->velocity + Cross(B->AngularVelocity, radB)
-					     - A->velocity - Cross(A->AngularVelocity, radA); // Relative velocity
+			// Calculate relative velocity at the contact point
+			Vector2 radV = B->velocity + Cross(B->AngularVelocity, radB)- 
+						   A->velocity - Cross(A->AngularVelocity, radA); // Relative velocity
 
+			// Calculate the velocity along the normal direction
 			real contactVel = Dot(radV, normal); // the normal component of the relative velocity
 
 			if (contactVel > 0) // if the objects are moving away from each other we don't need to resolve the collision
 				return;
 
-			real radACrossN = Cross(radA, normal);
-			real radBCrossN = Cross(radB, normal);
-			real invMassSum = A->InverseMass + B->InverseMass +
-			 	Sqr(radACrossN) * A->InverseInertia +
-				Sqr(radBCrossN) * B->InverseInertia; // the denominator of the impulse calculation
+			// Calculate the effective mass at the contact point
+			real radACrossN = Cross(radA, normal); // the cross product of the radius and the normal
+			real radBCrossN = Cross(radB, normal); // the cross product of the radius and the normal
+			real invMassSum = A->InverseMass  + B->InverseMass +
+			 				  Sqr(radACrossN) * A->InverseInertia +
+							  Sqr(radBCrossN) * B->InverseInertia; // the denominator of the impulse calculation
 
-			// the impulse scalar
-			real j = -(1.0f + e) * contactVel;
-			j /= invMassSum;
-			j /= (real)contactCount;
+			// Calculate the impulse scalar
+			// This uses the coefficient of restitution (e) to determine bounciness
+			real j = -(1.0f + e) * contactVel; // the magnitude of the impulse
+			j /= invMassSum; // the denominator of the impulse calculation
+			j /= (real)contactCount; // the number of contacts
 
 			// Apply the impulse to the bodies
 			Vector2 impulse = normal * j;
 			A->Impulse(-impulse, radA);
 			B->Impulse(impulse, radB);
 
+			// Recalculate relative velocity for friction calculation
+			radV = B->velocity + Cross(B->AngularVelocity, radB) - 
+				   A->velocity - Cross(A->AngularVelocity, radA); // Friction impulse
 
-			radV = B->velocity + Cross(B->AngularVelocity, radB)
-				- A->velocity - Cross(A->AngularVelocity, radA); // Friction impulse
-
+			// Calculate the tangent vector (perpendicular to the normal)
 			Vector2 tangent = radV - (normal * Dot(radV, normal)); // the tangent component of the relative velocity
 			tangent.Normalise(); // normalize the tangent vector
 
+			// Calculate the magnitude of the friction impulse
 			real jt = -Dot(radV, tangent); // the magnitude of the tangent component of the relative velocity
-			jt /= invMassSum;
-			jt /= (real)contactCount;
+			jt /= invMassSum; // the denominator of the impulse calculation
+			jt /= (real)contactCount; // the number of contacts
 
+			// Don't apply tiny friction impulses
 			if (Equal(jt, 0.0f)) // if the tangent impulse is 0 we don't need to resolve the collision
 				return;
 
 			// Coulomb's law - friction magnitude
 			Vector2 frictionImpulse;
 			if (std::abs(jt) < j * staticFriction)
-				frictionImpulse = tangent * jt;
+				frictionImpulse = tangent * jt; // static friction
 			else
-				frictionImpulse = tangent * -j * dynamicFriction;
+				frictionImpulse = tangent * -j * dynamicFriction; // dynamic friction
 
 			// Apply the friction impulse to the bodies
 			A->Impulse(-frictionImpulse, radA);
@@ -108,13 +120,18 @@ namespace Luna
 		const real k_slop = 0.05f; // Penetration allowance - usually 0.01 to 0.1 is good
 		const real percent = 0.4f; // Penetration percentage to correct - usually 20% to 80%
 
+		// Calculate the correction vector
 		Vector2 correction = normal * (std::max(penetration - k_slop, 0.0f) / (A->InverseMass + B->InverseMass)) * percent;
+		
+		// Apply the correction to both bodies, scaled by their inverse mass
 		A->position -= correction * A->InverseMass;
 		B->position += correction * B->InverseMass;
 	}
 
 	void Manifold::InfiniteMassCorrection()
 	{
+		// For objects with infinite mass (immovable objects),
+		// we simply set their velocities to zero
 		A->velocity.Set(0.0f, 0.0f);
 		B->velocity.Set(0.0f, 0.0f);
 	}

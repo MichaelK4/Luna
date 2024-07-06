@@ -1,20 +1,14 @@
 #include "Libs.h"
 Luna::Scene scene(1.0f / 60.0f, 10); // Create a scene with a time step of 1/60 and 10 iterations 
 
-void mainLoop()
-{
-	scene.mainLoop();
-}
+// Call the mainLoop function in the scene
+void mainLoop() { scene.mainLoop(); }
 
-void keyboardArrowKeys(int key, int x, int y)
-{
-	scene.keyboardArrowKeys(key, x, y); 
-}
+// Call the keyboardArrowKeys function in the scene
+void keyboardArrowKeys(int key, int x, int y) { scene.keyboardArrowKeys(key, x, y); }
 
-void LunaLoop() 
-{
-	scene.LunaLoop();
-}
+// Call the LunaLoop function in the scene
+void LunaLoop() { scene.LunaLoop(); }
 
 void keyboard(unsigned char key, int x, int y)
 {
@@ -28,10 +22,8 @@ void keyboard(unsigned char key, int x, int y)
 		scene.keyboard(key, x, y); 
 }
 
-void mouse(int button, int state, int x, int y) 
-{
-	scene.mouse(button, state, x, y);  
-} 
+// Call the mouse function in the scene
+void mouse(int button, int state, int x, int y) { scene.mouse(button, state, x, y); } 
 
 // Main function
 int main(int argc, char* argv[]) 
@@ -40,9 +32,7 @@ int main(int argc, char* argv[])
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE); // Set up a basic display buffer (double buffered)
 
 	// Set window position and size
-	int screenWidth = glutGet(GLUT_SCREEN_WIDTH);
-	int screenHeight = glutGet(GLUT_SCREEN_HEIGHT); 
-	glutInitWindowSize(WIDTH, HEIGHT);
+	glutInitWindowSize(WIDTH, HEIGHT); 
 	glutInitWindowPosition(350, 100);
 	glutCreateWindow("Luna2D - Physics Engine"); // Set the window title
 
@@ -51,11 +41,11 @@ int main(int argc, char* argv[])
 	scene.LoadLogoTexture("Luna2D-Logo.bmp"); // Load the logo texture
 
 	// Set up GLUT callback functions
-	glutDisplayFunc(mainLoop);  
-	glutKeyboardFunc(keyboard); 
-	glutSpecialFunc(keyboardArrowKeys);
-	glutMouseFunc(mouse);
-	glutIdleFunc(mainLoop); 
+	glutDisplayFunc(mainLoop); // Set the display callback function
+	glutKeyboardFunc(keyboard); // Set the keyboard callback function
+	glutSpecialFunc(keyboardArrowKeys); // Set the keyboard arrow keys callback function
+	glutMouseFunc(mouse); // Set the mouse callback function
+	glutIdleFunc(mainLoop); // Set the idle callback function
 
 	// Set up OpenGL projection
 	glMatrixMode(GL_PROJECTION); 
@@ -67,7 +57,7 @@ int main(int argc, char* argv[])
 	glLoadIdentity();
 
 	scene.Init(); // Set up OpenGL
-	scene.ShowOnDisplay();
+	scene.ShowOnDisplay(); // Show static objects on display
 
 	glutMainLoop(); // Enter the GLUT main loop
 

@@ -1,5 +1,9 @@
 #ifndef CLOCK_H
 #define CLOCK_H
+
+/* Windows is a library that provides
+functions for working with the
+Windows operating system. */
 #include <Windows.h>
 
 namespace Luna 
@@ -16,13 +20,27 @@ namespace Luna
 		LARGE_INTEGER m_freq; ///< Frequency of the performance counter
 		LARGE_INTEGER m_current; ///< Current time
 	public:
+		/**
+		 * @brief Constructor for Clock class
+		 * Initializes the clock and retrieves the frequency of the performance counter.
+		 * Uses LARGE_INTEGER for high-precision timing operations, suitable for measuring
+		 * small time intervals accurately.
+		 */
 		Clock(); // Constructor
 		~Clock(); // Destructor
 
 		/**
-	     * @brief Stops the clock
+		 * @brief Start the clock
+		 * Records the current time as the start time using QueryPerformanceCounter.
+		 * Uses LARGE_INTEGER to ensure precision in capturing start time.
 		 */
-		void Start(); // Start the clock
+		void Start();
+		
+		/**
+		 * @brief Stop the clock
+		 * Records the current time as the stop time using QueryPerformanceCounter.
+		 * Uses LARGE_INTEGER to ensure precision in capturing stop time.
+		 */
 		void Stop(); // Stop the clock
 
 		/**

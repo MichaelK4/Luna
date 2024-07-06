@@ -9,11 +9,6 @@
 #define WIDTH 800 // 800
 #define HEIGHT 600 // 600
 
-/* Windows is a library that provides
-functions for working with the
-Windows operating system. */
-//#include <Windows.h>
-
 /* algorithm is a library that provides a
 collection of functions for working with
 arrays and other data structures.*/
@@ -44,5 +39,9 @@ arrays and other data structures.*/
 #include "Collider.h"
 #include "Manifold.h"
 #include "Scene.h"
+
+//extern Luna::Vector2 GRAVITY; 
+//extern Luna::real GRAVITY_S;
+//extern Luna::real gravityScale;
 
 #endif // !LIBS_H

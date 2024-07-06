@@ -8,9 +8,6 @@
 namespace Luna
 {
 	typedef float real; // Real is a floating point number that represents a real number.
-	
-	//typedef unsigned int uint; // Unsigned int is a data type that represents an integer that is always positive.
-	
 	typedef unsigned char byte; // Unsigned char is a data type that represents a character that is always positive.
 
 	/*Pi is a mathematical constant that represents
@@ -18,10 +15,17 @@ namespace Luna
 	const real PI = 3.14159265358979323846f;
 	// Epsilon is a small number that is used to compare floating point numbers.
 	const real EPSILON = 0.0001f;
-	// Real gravity is the force that attracts a body toward the center of the earth.
+	// Constant value for real-world gravity. (Might be configurable later)
 	const real REAL_GRAVITY = 9.8f;
 
 
+	/**
+	 * @class Vector2
+	 * @brief Represents a 2D vector with x and y components.
+	 * This class provides functionality for creating, manipulating, and performing
+	 * mathematical operations on 2D vectors, which are fundamental for representing
+	 * positions and velocities in your 2D physics engine.
+	 */
 	class Vector2
 	{
 	public:
@@ -36,6 +40,7 @@ namespace Luna
 				real y;
 			};
 		};
+
 		Vector2(); // default constructor 
 		Vector2(real x, real y); // constructor 
 		Vector2(const Vector2& oVec); // copy constructor 
@@ -96,14 +101,14 @@ namespace Luna
 	// Get the squared distance between two vectors
 	real DistSqr(const Vector2& v, const Vector2& oVec);
 
-	/* dot product - 2D vector only
+	/*	dot product - 2D vector only
 		dot product is the cosine of the angle
 		between two vectors */
 	real Dot(const Vector2& v, const Vector2& oVec);
 
-	/* cross product - 2D vector only
-	cross product is the sine of the angle
-	between two vectors */
+	/*	cross product - 2D vector only
+		cross product is the sine of the angle
+		between two vectors */
 	real Cross(const Vector2& v, const Vector2& oVec);
 
 	// cross product with scalar 
@@ -126,9 +131,9 @@ namespace Luna
 
 	real Clamp(real val, real min, real max); // Clamp is a function that clamps a floating point number between two values.
 
-	/* Bias greater than is a function that compares
-	two floating point numbers and returns true if the
-	first number is greater than the second number. */
+	/*	Bias greater than is a function that compares
+		two floating point numbers and returns true if the
+		first number is greater than the second number. */
 	bool BiasGreaterThan(real a, real b);
 
 
@@ -146,12 +151,21 @@ namespace Luna
 	*  v = v + a * dt
 	*  x = x + v * dt
 	*/
+
 }
 // Delta time is the amount of time that has passed since the last frame.
 const float deltaTime = 1.0f / 60.0f;
 // Gravity scale is a value that is used to scale the force of gravity.
-const Luna::real GRAVITY_S = 5.0f; 
+const Luna::real GRAVITY_S = 5.0f;  
 // Gravity is a vector that represents the force of gravity.
-const Luna::Vector2 GRAVITY(0.0f, 9.8f * GRAVITY_S);
+const Luna::Vector2 GRAVITY(0.0f, 9.8f * GRAVITY_S);  
+
+//extern Luna::Vector2 GRAVITY; 
+//extern Luna::real GRAVITY_S; 
+//extern Luna::real gravityScale; 
+
+const Luna::real MIN_GRAVITY_SCALE = 0.0f; 
+const Luna::real MAX_GRAVITY_SCALE = 10.0f; 
+const Luna::real GRAVITY_INC = 0.5f;
 
 #endif // !VECTOR2_H
