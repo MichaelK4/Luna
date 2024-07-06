@@ -67,9 +67,8 @@ int main(int argc, char* argv[])
 	glLoadIdentity();
 
 	scene.Init(); // Set up OpenGL
-
 	scene.ShowOnDisplay();
-	
+
 	glutMainLoop(); // Enter the GLUT main loop
 
 	scene.Clear(); // Clean up the program 
