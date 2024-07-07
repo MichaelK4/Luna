@@ -1,5 +1,5 @@
 #include "Libs.h"
-Luna::Scene scene(1.0f / 60.0f, 10); // Create a scene with a time step of 1/60 and 10 iterations 
+Luna::Scene scene(DELTA_TIME, ITERATIONS); // Create a scene with a time step of 1/60 and 10 iterations  
 
 // Call the mainLoop function in the scene
 void mainLoop() { scene.mainLoop(); }
@@ -34,12 +34,12 @@ int main(int argc, char* argv[])
 
 	// Set window position and size
 	glutInitWindowSize(WIDTH, HEIGHT); 
-	glutInitWindowPosition(350, 100);
-	glutCreateWindow("Luna2D - Physics Engine"); // Set the window title
+	glutInitWindowPosition(POX_X, POX_Y);
+	glutCreateWindow(TITLE); // Set the window title
 
 	srand(time(NULL)); // Seed the random number generator 
 
-	scene.LoadLogoTexture("Luna2D-Logo.bmp"); // Load the logo texture
+	scene.LoadLogoTexture(LOGO); // Load the logo texture
 
 	// Set up GLUT callback functions
 	glutDisplayFunc(mainLoop); // Set the display callback function
@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 	glMatrixMode(GL_PROJECTION); 
 	glPushMatrix(); 
 	glLoadIdentity(); 
-	gluOrtho2D(0, 80, 60, 0); 
+	gluOrtho2D(LEFT_ORTHO, RIGHT_ORTHO, BOTTOM_ORTHO, TOP_ORTHO); // Set up the orthographic projection
 	glMatrixMode(GL_MODELVIEW); 
 	glPushMatrix(); 
 	glLoadIdentity();

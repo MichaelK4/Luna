@@ -8,6 +8,17 @@
 #define ESC 27 // ESC is a macro that represents the ASCII value of the escape key.
 #define WIDTH 800 // 800
 #define HEIGHT 600 // 600
+#define TITLE "Luna2D - Physics Engine" // Luna2D - Physics Engine
+#define LOGO "Luna2D-Logo.bmp" // Luna2D-Logo.bmp
+#define POX_X 350 // 350
+#define POX_Y 100 // 100 
+// gluOrtho2D(left, right, bottom, top)
+#define LEFT_ORTHO 0 // 0
+#define RIGHT_ORTHO 80 // 80
+#define BOTTOM_ORTHO 60 // 60
+#define TOP_ORTHO 0 // 0 
+#define DELTA_TIME 1.0f / 60.0f // 1.0f / 60.0f
+#define ITERATIONS 10 // 10
 
 /* algorithm is a library that provides a
 collection of functions for working with
