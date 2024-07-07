@@ -2,6 +2,21 @@
 
 ![Alt text](<Luna2D Logo.jpeg>)
 
+## Table of Contents
+- [Description](#description)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Controls](#controls)
+  - [Menu Controls](#menu-controls)
+    - [Object Settings](#object-settings)
+    - [Custom Object Settings](#custom-object-settings)
+    - [Surface Settings](#surface-settings)
+- [Project Structure](#project-structure)
+- [Measurements and Results for Evaluating the System’s Performance](#measurements-and-results-for-evaluating-the-systems-performance)
+- [Recommendations for Further Development](#recommendations-for-further-development)
+- [License](#license)
+
 ## Description
 Luna2D is a 2D physics engine developed using C++ and OpenGL. It simulates basic physical phenomena such as gravity, collision, friction, and rigid body dynamics. This project is part of a bachelor's degree in computer science at Afeka - The Academic College of Engineering in Tel Aviv, and aims to provide an educational tool for understanding physics simulations in two-dimensional space.
 
@@ -86,4 +101,4 @@ Luna2D is a 2D physics engine developed using C++ and OpenGL. It simulates basic
 - Add a 3D simulation environment option.
 
 ## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.txt) file for details. 
