@@ -63,21 +63,16 @@ namespace Luna
 		void SetDynamicFriction(real df); // Set the dynamic friction of an object.
 		void SetRestitution(real r);  // Set the restitution of an object.
 		void SetMaterial(Material* m);  // Set the material of an object.
+		// Check if the object has a custom material
+		void setIsCustomMaterial(bool c) { isCustomMaterial = c; } 
 		
 		// getters
 		real GetStaticFriction(); // Get the static friction of an object.
 		real GetDynamicFriction(); // Get the dynamic friction of an object.
 		real GetRestitution(); // Get the restitution of an object.
 		Material* GetMaterial(); // Get the material of an object.
-		void setIsCustomMaterial(bool c)
-		{
-			isCustomMaterial = c;
-		}
-
-		bool getIsCustomMaterial()
-		{
-			return isCustomMaterial; 
-		}
+		// Get if the object has a custom material
+		bool getIsCustomMaterial() { return isCustomMaterial; } 
 	};
 }
 

@@ -67,25 +67,15 @@ namespace Luna
 		void AddMaterialSurface(const std::string& name, real restitution, real dynamicFriction, real staticFriction); // add a material to the surface
 		void AddMaterials(); // add materials to the scene
 		
-		short GetmaterialCountObject() // get the number of materials for the object 
-		{
-			return materialCountObject;  
-		}
+		// get the number of materials for the object 
+		short GetmaterialCountObject() { return materialCountObject; }
 
-		short GetmaterialCountSurface()  // get the number of materials for the surface
-		{
-			return materialCountSurface;  
-		}
+		// get the number of materials for the surface
+		short GetmaterialCountSurface(){ return materialCountSurface; }
 
-		bool getIsShowLogo()
-		{
-			return showLogo; 
-		}
+		bool getIsShowLogo() { return showLogo; } //get the value of showLogo
 
-		void setShowLogo(bool l) 
-		{
-			this->showLogo = l;    
-		}
+		void setShowLogo(bool l) { this->showLogo = l; } //set the value of showLogo
 
 		// Mouse callback function for handling mouse clicks
 		void mouse(int button, int state, int x, int y);

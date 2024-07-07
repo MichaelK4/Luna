@@ -18,9 +18,10 @@ void keyboard(unsigned char key, int x, int y)
 		glutDisplayFunc(LunaLoop);
 		glutPostRedisplay();
 	}
-	else
-		scene.keyboard(key, x, y); 
+	else scene.keyboard(key, x, y); 
 }
+
+void reshape(int w, int h) { glutReshapeWindow(WIDTH, HEIGHT); } 
 
 // Call the mouse function in the scene
 void mouse(int button, int state, int x, int y) { scene.mouse(button, state, x, y); } 
@@ -46,6 +47,8 @@ int main(int argc, char* argv[])
 	glutSpecialFunc(keyboardArrowKeys); // Set the keyboard arrow keys callback function
 	glutMouseFunc(mouse); // Set the mouse callback function
 	glutIdleFunc(mainLoop); // Set the idle callback function
+
+	glutReshapeFunc(reshape);
 
 	// Set up OpenGL projection
 	glMatrixMode(GL_PROJECTION); 
